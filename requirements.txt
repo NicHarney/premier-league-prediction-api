@@ -1,0 +1,10 @@
+Django
+djangorestframework
+djangorestframework-simplejwt
+django-filter
+python-dotenv
+drf-spectacular
+black
+flake8
+isort
+pre-commit
