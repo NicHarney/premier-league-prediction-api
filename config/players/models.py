@@ -10,14 +10,14 @@ class Player(models.Model):
         ("FW", "Forward"),
     ]
 
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=100, db_index=True)
     team = models.ForeignKey(
         Team,
         on_delete=models.CASCADE,
         related_name="players"
     )
 
-    position = models.CharField(max_length=2, choices=POSITION_CHOICES)
+    position = models.CharField(max_length=2, choices=POSITION_CHOICES, db_index=True)
 
     date_of_birth = models.DateField(null=True, blank=True)
 

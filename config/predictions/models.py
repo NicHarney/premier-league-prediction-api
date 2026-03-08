@@ -16,4 +16,4 @@ class Prediction(models.Model):
     predicted_home_goals = models.FloatField()
     predicted_away_goals = models.FloatField()
 
-    model_version = models.CharField(max_length=50)
+    model_version = models.CharField(max_length=50, db_index=True)
