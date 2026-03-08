@@ -1,5 +1,9 @@
 from django.db import models
 from teams.models import Team
+from .managers import PlayerMatchStatsManager
+from django.utils import timezone
+
+
 
 # Create your models here.
 class Match(models.Model):
@@ -37,14 +41,14 @@ class Match(models.Model):
 class PlayerMatchStats(models.Model):
 
     player = models.ForeignKey(
-        "Player",
+        "players.Player",
         on_delete=models.CASCADE,
         related_name="match_stats",
         db_index=True
     )
 
     team = models.ForeignKey(
-        "Team",
+        "teams.Team",
         on_delete=models.CASCADE,
         db_index=True
     )
@@ -68,6 +72,9 @@ class PlayerMatchStats(models.Model):
     rolling_goals_5 = models.FloatField(null=True, blank=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
+
+    # Custom manager for advanced queries
+    objects = PlayerMatchStatsManager()
 
     class Meta:
         indexes = [
