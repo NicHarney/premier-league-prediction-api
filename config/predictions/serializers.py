@@ -8,4 +8,8 @@ class PredictionSerializer(serializers.ModelSerializer):
         model = Prediction
         fields = "__all__"
 
-        
+
+class MatchPredictionSerializer(serializers.Serializer):
+
+    home_team = serializers.IntegerField()
+    away_team = serializers.IntegerField()

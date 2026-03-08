@@ -25,6 +25,7 @@ from players.views import PlayerViewSet
 from matches.views import MatchViewSet, PlayerMatchStatsViewSet
 from predictions.views import PredictionViewSet
 from analytics.views import BettingOddsViewSet
+from predictions.views import MatchPredictionView
 
 router = DefaultRouter()
 
@@ -40,4 +41,5 @@ urlpatterns = [
     path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
     path("api/docs/", SpectacularSwaggerView.as_view(url_name="schema")),
     path("api/", include(router.urls)),
+    path("api/predict-match/", MatchPredictionView.as_view()),
 ]
