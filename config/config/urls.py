@@ -16,11 +16,28 @@ Including another URLconf
 """
 
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
+
+from rest_framework.routers import DefaultRouter
+from teams.views import TeamViewSet
+from players.views import PlayerViewSet
+from matches.views import MatchViewSet, PlayerMatchStatsViewSet
+from predictions.views import PredictionViewSet
+from analytics.views import BettingOddsViewSet
+
+router = DefaultRouter()
+
+router.register("teams", TeamViewSet)
+router.register("players", PlayerViewSet)
+router.register("matches", MatchViewSet)
+router.register("player-match-stats", PlayerMatchStatsViewSet)
+router.register("predictions", PredictionViewSet)
+router.register("betting-odds", BettingOddsViewSet)
 
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
     path("api/docs/", SpectacularSwaggerView.as_view(url_name="schema")),
+    path("api/", include(router.urls)),
 ]
