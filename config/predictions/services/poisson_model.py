@@ -21,6 +21,9 @@ def predict_match(home_expected_goals, away_expected_goals):
     draw = 0
     away_win = 0
 
+    over_2_5 = 0
+    under_2_5 = 0
+
     scorelines = []
 
     for home_goals in range(MAX_GOALS):
@@ -31,9 +34,10 @@ def predict_match(home_expected_goals, away_expected_goals):
                 away_goal_probs[away_goals]
             )
 
+            total_goals = home_goals + away_goals
             scorelines.append({
                 "score": f"{home_goals}-{away_goals}",
-                "probability": prob
+                "probability": round(prob, 4)
             })
             
 
@@ -44,6 +48,11 @@ def predict_match(home_expected_goals, away_expected_goals):
             else:
                 away_win += prob
 
+            if total_goals > 2:
+                over_2_5 += prob
+            else:
+                under_2_5 += prob
+
     # sort scorelines by probability
     scorelines = sorted(
         scorelines,
@@ -52,26 +61,13 @@ def predict_match(home_expected_goals, away_expected_goals):
 
     )
     
-    top_scorelines = scorelines[:10]
+    
     return {
-        "home_win_probability": home_win,
-        "draw_probability": draw,
-        "away_win_probability": away_win,
-        "scoreline_probabilities": top_scorelines
+        "home_win_probability": round(home_win, 4),
+        "draw_probability": round(draw, 4),
+        "away_win_probability": round(away_win, 4),
+        "over_2_5_goals": round(over_2_5, 4),
+        "under_2_5_goals": round(under_2_5, 4),
+        "scoreline_probabilities": scorelines[:10]  
     }
 
-def expected_goals(home_team,away_team,league_home_avg,league_away_avg):
-
-    home_goals = (
-        home_team.home_attack_strength *
-        away_team.away_defence_strength *
-        league_home_avg
-    )
-
-    away_goals = (
-        away_team.away_attack_strength *
-        home_team.home_defence_strength *
-        league_away_avg
-    )
-
-    return home_goals, away_goals

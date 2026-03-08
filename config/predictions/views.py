@@ -9,9 +9,10 @@ from teams.models import Team
 from matches.models import Match
 
 from predictions.serializers import MatchPredictionSerializer
-from predictions.services.poisson_model import predict_match, expected_goals
+from predictions.services.poisson_model import predict_match
 
 from django.db.models import Avg
+from predictions.services.expected_goals import calculate_expected_goals
 
 # Create your views here.
 
@@ -32,7 +33,7 @@ class MatchPredictionView(APIView):
         league_home_avg = Match.objects.aggregate(avg=Avg("home_score"))["avg"]
         league_away_avg = Match.objects.aggregate(avg=Avg("away_score"))["avg"]
 
-        home_xg, away_xg = expected_goals(
+        home_xg, away_xg = calculate_expected_goals(
             home_team,
             away_team,
             league_home_avg,
