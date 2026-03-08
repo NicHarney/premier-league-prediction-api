@@ -38,6 +38,13 @@ class Match(models.Model):
             models.Index(fields=["away_team","match_date"]),
         ]
 
+        constraints = [
+            models.UniqueConstraint(
+                fields=["home_team", "away_team", "match_date"],
+                name="unique_match_fixture"
+            )
+        ]
+
 class PlayerMatchStats(models.Model):
 
     player = models.ForeignKey(
