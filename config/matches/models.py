@@ -2,7 +2,7 @@ from django.db import models
 from teams.models import Team
 from .managers import PlayerMatchStatsManager
 from django.utils import timezone
-
+from django.db.models import Q, F
 
 
 # Create your models here.
@@ -63,6 +63,7 @@ class PlayerMatchStats(models.Model):
     goals = models.IntegerField(default=0)
     assists = models.IntegerField(default=0)
     shots = models.IntegerField(default=0)
+    shots_on_target = models.IntegerField(default=0)
     fouls = models.IntegerField(default=0)
     yellow_cards = models.IntegerField(default=0)
     red_cards = models.IntegerField(default=0)
@@ -83,7 +84,41 @@ class PlayerMatchStats(models.Model):
             models.Index(fields=["team", "match"]),
         ]
         constraints = [
-            models.UniqueConstraint(fields=["player", "match"], name="unique_player_match_stats")
+            models.UniqueConstraint(fields=["player", "match"], name="unique_player_match_stats"),
+
+            models.CheckConstraint(
+                condition=Q(goals__gte=0),
+                name="goals_non_negative"
+            ),
+            models.CheckConstraint(
+                condition=Q(assists__gte=0),
+                name="assists_non_negative"
+            ),
+            models.CheckConstraint(
+                condition=Q(shots__gte=0),
+                name="shots_non_negative"
+            ),
+            models.CheckConstraint(
+                condition=Q(shots_on_target__lte=F("shots")),
+                name="shots_on_target_valid"
+            ),
+            models.CheckConstraint(
+                condition=Q(minutes_played__gte=0, minutes_played__lte=120),
+                name="valid_minutes_played"
+            ),
+            
+            models.CheckConstraint(
+                condition=Q(fouls__gte=0),
+                name="fouls_non_negative"
+            ),
+            models.CheckConstraint(
+                condition=Q(yellow_cards__gte=0),
+                name="yellow_cards_non_negative"
+            ),
+            models.CheckConstraint(
+                condition=Q(red_cards__gte=0),
+                name="red_cards_non_negative"
+            ),
         ]
 
     def __str__(self):
