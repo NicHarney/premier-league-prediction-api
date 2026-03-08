@@ -6,63 +6,73 @@ from analytics.services.weighting import match_weight
 
 def calculate_team_strengths():
 
-    matches = Match.objects.all()
+    matches = Match.objects.select_related("home_team", "away_team")
 
-    # --- calculate weighted league average goals ---
+    # --- calculate weighted league averages ---
 
-    weighted_goals = 0
+    home_goals_weighted = 0
+    away_goals_weighted = 0
     total_weight = 0
 
     for match in matches:
 
         weight = match_weight(match.match_date)
 
-        weighted_goals += match.home_score * weight
-        weighted_goals += match.away_score * weight
+        home_goals_weighted += match.home_score * weight
+        away_goals_weighted += match.away_score * weight
 
-        # two goal observations per match
-        total_weight += 2 * weight
+        total_weight += weight
 
-    league_avg_goals = weighted_goals / total_weight if total_weight else 1
+    league_home_avg = home_goals_weighted / total_weight if total_weight else 1
+    league_away_avg = away_goals_weighted / total_weight if total_weight else 1
 
     # --- calculate team strengths ---
 
     for team in Team.objects.all():
 
-        scored_weighted = 0
-        conceded_weighted = 0
-        team_weight = 0
+        home_scored = 0
+        home_conceded = 0
+        home_weight = 0
 
-        team_matches = matches.filter(home_team=team) | matches.filter(away_team=team)
+        away_scored = 0
+        away_conceded = 0
+        away_weight = 0
 
-        for match in team_matches:
+        home_matches = matches.filter(home_team=team)
+        away_matches = matches.filter(away_team=team)
+
+        for match in home_matches:
 
             weight = match_weight(match.match_date)
 
-            if match.home_team == team:
+            home_scored += match.home_score * weight
+            home_conceded += match.away_score * weight
+            home_weight += weight
 
-                goals_scored = match.home_score
-                goals_conceded = match.away_score
+        for match in away_matches:
 
-            else:
+            weight = match_weight(match.match_date)
 
-                goals_scored = match.away_score
-                goals_conceded = match.home_score
+            away_scored += match.away_score * weight
+            away_conceded += match.home_score * weight
+            away_weight += weight
 
-            scored_weighted += goals_scored * weight
-            conceded_weighted += goals_conceded * weight
+        avg_home_scored = home_scored / home_weight if home_weight else 0
+        avg_home_conceded = home_conceded / home_weight if home_weight else 0
 
-            team_weight += weight
+        avg_away_scored = away_scored / away_weight if away_weight else 0
+        avg_away_conceded = away_conceded / away_weight if away_weight else 0
 
-        avg_scored = scored_weighted / team_weight if team_weight else 0
-        avg_conceded = conceded_weighted / team_weight if team_weight else 0
+        home_attack = avg_home_scored / league_home_avg if league_home_avg else 1
+        home_defence = league_away_avg / avg_home_conceded if avg_home_conceded else 1
 
-        attack_strength = avg_scored / league_avg_goals if league_avg_goals else 1
-        defence_strength = league_avg_goals / avg_conceded  if avg_conceded else 1
+        away_attack = avg_away_scored / league_away_avg if league_away_avg else 1
+        away_defence = league_home_avg / avg_away_conceded if avg_away_conceded else 1
 
-        team.avg_goals_scored = avg_scored
-        team.avg_goals_conceded = avg_conceded
-        team.attack_strength = attack_strength
-        team.defence_strength = defence_strength
+        team.home_attack_strength = home_attack
+        team.home_defence_strength = home_defence
+
+        team.away_attack_strength = away_attack
+        team.away_defence_strength = away_defence
 
         team.save()
