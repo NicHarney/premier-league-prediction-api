@@ -22,3 +22,11 @@ class BettingOdds(models.Model):
         indexes = [
             models.Index(fields=["bookmaker"]),
         ]
+
+class LeagueStatistics(models.Model):
+
+    season = models.CharField(max_length=9, unique=True, db_index=True)
+    average_home_goals = models.FloatField()
+    average_away_goals = models.FloatField()
+
+    updated_at = models.DateTimeField(auto_now=True)

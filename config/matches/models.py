@@ -19,6 +19,11 @@ class Match(models.Model):
 
     season = models.CharField(max_length=9, db_index=True)
 
+    expected_home_goals = models.FloatField(null=True, blank=True)
+    expected_away_goals = models.FloatField(null=True, blank=True)
+
+    ordering = ["-match_date"]
+
     def __str__(self):
         return f"{self.home_team} vs {self.away_team}"
     
@@ -32,13 +37,22 @@ class Match(models.Model):
 class PlayerMatchStats(models.Model):
 
     player = models.ForeignKey(
-        "players.Player",
-        on_delete=models.CASCADE
+        "Player",
+        on_delete=models.CASCADE,
+        related_name="match_stats",
+        db_index=True
     )
 
+    team = models.ForeignKey(
+        "Team",
+        on_delete=models.CASCADE,
+        db_index=True
+    )
     match = models.ForeignKey(
-        Match,
-        on_delete=models.CASCADE
+        "Match",
+        on_delete=models.CASCADE,
+        related_name="player_stats",
+        db_index=True
     )
 
     minutes_played = models.IntegerField()
@@ -49,10 +63,21 @@ class PlayerMatchStats(models.Model):
     yellow_cards = models.IntegerField(default=0)
     red_cards = models.IntegerField(default=0)
 
+    rolling_shots_3 = models.FloatField(null=True, blank=True)
+    rolling_shots_5 = models.FloatField(null=True, blank=True)
+    rolling_goals_5 = models.FloatField(null=True, blank=True)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+
     class Meta:
         indexes = [
-            models.Index(fields=["player", "match"])
+            models.Index(fields=["player", "match"]),
+            models.Index(fields=["player", "team"]),
+            models.Index(fields=["team", "match"]),
         ]
         constraints = [
             models.UniqueConstraint(fields=["player", "match"], name="unique_player_match_stats")
         ]
+
+    def __str__(self):
+        return f"{self.player} - {self.match} stats"
