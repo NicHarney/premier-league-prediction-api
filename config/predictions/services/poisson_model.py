@@ -29,10 +29,16 @@ def predict_match(home_expected_goals, away_expected_goals):
     for home_goals in range(MAX_GOALS):
         for away_goals in range(MAX_GOALS):
 
-            prob = (
-                home_goal_probs[home_goals] *
-                away_goal_probs[away_goals]
+            base_prob = home_goal_probs[home_goals] * away_goal_probs[away_goals]
+
+            # Apply Dixon-Coles adjustment for low-scoring games
+            adjustment = dixon_coles_adjustment(
+                home_goals,
+                away_goals,
+                home_expected_goals,
+                away_expected_goals
             )
+            prob = base_prob * adjustment
 
             total_goals = home_goals + away_goals
             scorelines.append({
@@ -71,3 +77,16 @@ def predict_match(home_expected_goals, away_expected_goals):
         "scoreline_probabilities": scorelines[:10]  
     }
 
+
+def dixon_coles_adjustment(home_goals, away_goals, home_xg, away_xg, rho=-0.1):
+
+    if home_goals == 0 and away_goals == 0:
+        return 1 - (home_xg * away_xg * rho)
+    elif home_goals == 0 and away_goals == 1:
+        return 1 + (home_xg * rho)
+    elif home_goals == 1 and away_goals == 0:
+        return 1 + (away_xg * rho)
+    elif home_goals == 1 and away_goals == 1:
+        return 1 - rho
+    else:
+        return 1
