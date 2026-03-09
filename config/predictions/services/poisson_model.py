@@ -90,3 +90,25 @@ def dixon_coles_adjustment(home_goals, away_goals, home_xg, away_xg, rho=-0.1):
         return 1 - rho
     else:
         return 1
+
+def over_under_probabilities(home_expected_goals, away_expected_goals):
+
+    total_prob = 0
+    over_prob = 0
+
+    for home_goals in range(MAX_GOALS):
+        for away_goals in range(MAX_GOALS):
+            # Calculate the probability of each scoreline
+            prob = poisson.pmf(home_goals, home_expected_goals) * poisson.pmf(away_goals, away_expected_goals)
+            total_prob += prob
+
+            # Check if the total goals are over or under 2.5
+            if home_goals + away_goals > 2:
+                over_prob += prob
+
+    under_prob = total_prob - over_prob
+
+    return {
+       "over_2_5": round(over_prob, 4),
+       "under_2_5": round(under_prob, 4)
+    }

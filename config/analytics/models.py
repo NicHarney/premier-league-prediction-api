@@ -14,6 +14,9 @@ class BettingOdds(models.Model):
     draw_odds = models.FloatField()
     away_win_odds = models.FloatField()
 
+    over_2_5_odds = models.FloatField(null=True)
+    under_2_5_odds = models.FloatField(null=True)
+
     bookmaker = models.CharField(max_length=100, db_index=True)
 
     def __str__(self):

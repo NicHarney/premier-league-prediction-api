@@ -85,6 +85,8 @@ class Command(BaseCommand):
                             "home_win_odds": float(row["B365H"]),
                             "draw_odds": float(row["B365D"]),
                             "away_win_odds": float(row["B365A"]),
+                            "over_2_5_odds": float(row["B365>2.5"]) if row.get("B365>2.5") else None,
+                            "under_2_5_odds": float(row["B365<2.5"]) if row.get("B365<2.5") else None,
                         }
                     )
 

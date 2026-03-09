@@ -15,23 +15,47 @@ def calculate_value(model_prob, odds):
     }
 
 
-def evaluate_match_value(model_predictions, odds):
+def evaluate_match_value(predictions, odds):
 
-    results = {}
+    value = {}
 
-    results["home_win"] = calculate_value(
-        model_predictions["home_win_probability"],
+    def compute_value(model_prob, market_odds):
+
+        if market_odds is None:
+            return None
+
+        bookmaker_prob = 1 / market_odds
+
+        return {
+            "model_probability": model_prob,
+            "bookmaker_probability": bookmaker_prob,
+            "value": model_prob - bookmaker_prob
+        }
+
+
+    value["home_win"] = compute_value(
+        predictions["home_win_probability"],
         odds["home_win"]
     )
 
-    results["draw"] = calculate_value(
-        model_predictions["draw_probability"],
+    value["draw"] = compute_value(
+        predictions["draw_probability"],
         odds["draw"]
     )
 
-    results["away_win"] = calculate_value(
-        model_predictions["away_win_probability"],
+    value["away_win"] = compute_value(
+        predictions["away_win_probability"],
         odds["away_win"]
     )
 
-    return results
+    value["over_2_5"] = compute_value(
+        predictions["over_2_5_goals"],
+        odds["over_2_5"]
+    )
+
+    value["under_2_5"] = compute_value(
+        predictions["under_2_5_goals"],
+        odds["under_2_5"]
+    )
+
+    return value
