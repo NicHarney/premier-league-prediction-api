@@ -13,3 +13,11 @@ class MatchPredictionSerializer(serializers.Serializer):
 
     home_team = serializers.IntegerField()
     away_team = serializers.IntegerField()
+
+class ValueBetSerializer(serializers.Serializer):
+    home_team = serializers.IntegerField()
+    away_team = serializers.IntegerField()
+
+    home_win_odds = serializers.FloatField()
+    draw_odds = serializers.FloatField()
+    away_win_odds = serializers.FloatField()
