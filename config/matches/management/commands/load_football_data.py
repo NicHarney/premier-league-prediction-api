@@ -8,6 +8,7 @@ from django.core.management.base import BaseCommand
 from teams.models import Team
 from matches.models import Match
 from datetime import datetime
+from analytics.models import BettingOdds
 
 BASE_DIR = Path(__file__).resolve().parents[3]
 DATA_DIR = BASE_DIR / "data" / "seasons"
@@ -63,7 +64,7 @@ class Command(BaseCommand):
                     match_date = datetime.strptime(row["Date"], "%d/%m/%y")
                 except ValueError:
                     match_date = datetime.strptime(row["Date"], "%d/%m/%Y")
-                Match.objects.get_or_create(
+                match, created = Match.objects.get_or_create(
                     home_team=home_team,
                     away_team=away_team,
                     match_date=match_date,
@@ -74,5 +75,17 @@ class Command(BaseCommand):
                     }
                     
                 )
+
+                if row.get("B365H") and row.get("B365D") and row.get("B365A"):
+    
+                    BettingOdds.objects.update_or_create(
+                        match=match,
+                        bookmaker="Bet365",
+                        defaults={
+                            "home_win_odds": float(row["B365H"]),
+                            "draw_odds": float(row["B365D"]),
+                            "away_win_odds": float(row["B365A"]),
+                        }
+                    )
 
         self.stdout.write(self.style.SUCCESS("Dataset loaded"))

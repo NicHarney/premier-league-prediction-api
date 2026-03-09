@@ -6,7 +6,8 @@ class BettingOdds(models.Model):
 
     match = models.OneToOneField(
         Match,
-        on_delete=models.CASCADE
+        on_delete=models.CASCADE,
+        related_name="odds"
     )
 
     home_win_odds = models.FloatField()

@@ -14,6 +14,7 @@ from predictions.services.poisson_model import predict_match
 from django.db.models import Avg
 from predictions.services.expected_goals import calculate_expected_goals
 from predictions.services.value_bets import evaluate_match_value
+from predictions.services.backtest import run_backtest
 
 # Create your views here.
 
@@ -87,3 +88,9 @@ class ValueBetView(APIView):
             "model_predictions": predictions,
             "value_analysis": value_analysis
         })
+
+class BacktestView(APIView):
+
+    def get(self, request):
+        results = run_backtest()
+        return Response(results)

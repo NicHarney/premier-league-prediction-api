@@ -25,7 +25,7 @@ from players.views import PlayerViewSet
 from matches.views import MatchViewSet, PlayerMatchStatsViewSet
 from predictions.views import PredictionViewSet
 from analytics.views import BettingOddsViewSet
-from predictions.views import MatchPredictionView, ValueBetView
+from predictions.views import MatchPredictionView, ValueBetView, BacktestView
 
 router = DefaultRouter()
 
@@ -43,4 +43,5 @@ urlpatterns = [
     path("api/", include(router.urls)),
     path("api/predict-match/", MatchPredictionView.as_view()),
     path("api/value-bet/", ValueBetView.as_view()),
+    path("api/backtest/", BacktestView.as_view()),
 ]
