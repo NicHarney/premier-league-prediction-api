@@ -23,8 +23,7 @@ class Match(models.Model):
 
     season = models.CharField(max_length=9, db_index=True)
 
-    expected_home_goals = models.FloatField(null=True, blank=True)
-    expected_away_goals = models.FloatField(null=True, blank=True)
+    
 
     ordering = ["-match_date"]
 

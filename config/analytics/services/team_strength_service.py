@@ -2,6 +2,7 @@ from teams.models import Team
 from matches.models import Match
 
 from analytics.services.weighting import match_weight
+from django.utils import timezone
 
 
 def calculate_team_strengths():
@@ -13,10 +14,11 @@ def calculate_team_strengths():
     home_goals_weighted = 0
     away_goals_weighted = 0
     total_weight = 0
-
+    prediction_date = timezone.now()
     for match in matches:
 
-        weight = match_weight(match.match_date)
+        
+        weight = match_weight(match.match_date, prediction_date)
 
         home_goals_weighted += match.home_score * weight
         away_goals_weighted += match.away_score * weight
@@ -43,7 +45,7 @@ def calculate_team_strengths():
 
         for match in home_matches:
 
-            weight = match_weight(match.match_date)
+            weight = match_weight(match.match_date,prediction_date)
 
             home_scored += match.home_score * weight
             home_conceded += match.away_score * weight
@@ -51,7 +53,7 @@ def calculate_team_strengths():
 
         for match in away_matches:
 
-            weight = match_weight(match.match_date)
+            weight = match_weight(match.match_date,prediction_date)
 
             away_scored += match.away_score * weight
             away_conceded += match.home_score * weight

@@ -57,13 +57,30 @@ def predict_match_view(request):
 def value_bet_view(request):
 
     try:
-        home_xg = float(request.data.get("home_xg"))
-        away_xg = float(request.data.get("away_xg"))
+        home_team_id = int(request.data.get("home_team"))
+        away_team_id = int(request.data.get("away_team"))
     except (TypeError, ValueError):
         return Response(
-            {"error": "Invalid expected goals values"},
+            {"error": "Invalid team IDs"},
             status=status.HTTP_400_BAD_REQUEST,
         )
+    home_team = Team.objects.get(id=home_team_id)
+    away_team = Team.objects.get(id=away_team_id)
+
+    league_home_avg = Match.objects.aggregate(
+        Avg("home_score")
+    )["home_score__avg"]
+
+    league_away_avg = Match.objects.aggregate(
+        Avg("away_score")
+    )["away_score__avg"]
+
+    home_xg, away_xg = calculate_expected_goals(
+        home_team,
+        away_team,
+        league_home_avg,
+        league_away_avg
+    )
 
     odds = request.data.get("odds")
 
