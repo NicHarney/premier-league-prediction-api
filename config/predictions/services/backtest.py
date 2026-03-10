@@ -1,141 +1,60 @@
-import math
 from collections import defaultdict
 
-from matches.models import Match
 from predictions.services.poisson_model import predict_match
-from predictions.services.value_bets import evaluate_match_value
+from predictions.services.value_bets import evaluate_markets
+from predictions.services.expected_goals import calculate_expected_goals
+from analytics.services.weighting import match_weight
 
 
-DECAY_RATE = 0.002
-VALUE_THRESHOLD = 0.05
-STAKE = 1
-MIN_MATCHES_FOR_TEAM = 5
+EDGE_THRESHOLD = 0.12
+MIN_ODDS = 1.7
 
 
-def time_weight(match_date, current_date):
+def run_backtest(matches):
 
-    days_old = (current_date - match_date).days
-    return math.exp(-DECAY_RATE * days_old)
+    matches = matches.order_by("match_date")
 
-
-def compute_weighted_strengths(past_matches, current_date):
-
-    goals_scored = defaultdict(float)
-    goals_conceded = defaultdict(float)
-    matches_played = defaultdict(float)
+    goals_scored = defaultdict(int)
+    goals_conceded = defaultdict(int)
+    matches_played = defaultdict(int)
 
     total_home_goals = 0
     total_away_goals = 0
-    total_weight = 0
+    total_matches = 0
 
-    for m in past_matches:
-
-        weight = time_weight(m.match_date, current_date)
-
-        home = m.home_team_id
-        away = m.away_team_id
-
-        goals_scored[home] += m.home_score * weight
-        goals_conceded[home] += m.away_score * weight
-
-        goals_scored[away] += m.away_score * weight
-        goals_conceded[away] += m.home_score * weight
-
-        matches_played[home] += weight
-        matches_played[away] += weight
-
-        total_home_goals += m.home_score * weight
-        total_away_goals += m.away_score * weight
-        total_weight += weight
-
-    if total_weight == 0:
-        return None
-
-    league_home_avg = total_home_goals / total_weight
-    league_away_avg = total_away_goals / total_weight
-
-    return goals_scored, goals_conceded, matches_played, league_home_avg, league_away_avg
-
-
-def is_bet_winner(outcome, match):
-
-    total_goals = match.home_score + match.away_score
-
-    if outcome == "home_win":
-        return match.home_score > match.away_score
-
-    if outcome == "away_win":
-        return match.home_score < match.away_score
-
-    if outcome == "draw":
-        return match.home_score == match.away_score
-
-    if outcome == "over_2_5":
-        return total_goals > 2
-
-    if outcome == "under_2_5":
-        return total_goals <= 2
-
-    return False
-
-
-def run_backtest():
-
-    matches = Match.objects.select_related(
-        "home_team",
-        "away_team",
-        "odds"
-    ).order_by("match_date")
-
-    past_matches = []
-
-    bets_placed = 0
+    bets = 0
     wins = 0
     profit = 0
-    matches_tested = 0
 
     for match in matches:
-
-        strengths = compute_weighted_strengths(past_matches, match.match_date)
-
-        if strengths is None:
-            past_matches.append(match)
-            continue
-
-        goals_scored, goals_conceded, matches_played, league_home_avg, league_away_avg = strengths
 
         home_id = match.home_team_id
         away_id = match.away_team_id
 
-        if (
-            matches_played[home_id] < MIN_MATCHES_FOR_TEAM or
-            matches_played[away_id] < MIN_MATCHES_FOR_TEAM
-        ):
-            past_matches.append(match)
+       
+        # Skip early matches where we have no historical data
+        if matches_played[home_id] < 5 or matches_played[away_id] < 5:
+
+            update_team_stats(match, match.match_date, goals_scored, goals_conceded, matches_played)
+
+            total_home_goals += match.home_score
+            total_away_goals += match.away_score
+            total_matches += 1
+
             continue
 
-        home_attack = (
-            goals_scored[home_id] /
-            matches_played[home_id]
-        ) / league_home_avg
+        
+        league_home_avg = total_home_goals / total_matches
+        league_away_avg = total_away_goals / total_matches
 
-        home_defence = (
-            league_away_avg /
-            (goals_conceded[home_id] / matches_played[home_id])
+       
+
+        home_xg, away_xg = calculate_expected_goals(
+            match.home_team,
+            match.away_team,
+            league_home_avg,
+            league_away_avg
         )
-
-        away_attack = (
-            goals_scored[away_id] /
-            matches_played[away_id]
-        ) / league_home_avg
-
-        away_defence = (
-            league_away_avg /
-            (goals_conceded[away_id] / matches_played[away_id])
-        )
-
-        home_xg = home_attack * away_defence * league_home_avg
-        away_xg = away_attack * home_defence * league_away_avg
 
         predictions = predict_match(home_xg, away_xg)
 
@@ -147,42 +66,90 @@ def run_backtest():
             "under_2_5": match.odds.under_2_5_odds if match.odds else None
         }
 
-        value = evaluate_match_value(predictions, odds)
+        markets = evaluate_markets(predictions, odds)
 
-        best_outcome = None
-        best_value = 0
+        best_market = None
+        best_ev = 0
 
-        for outcome in ["home_win", "draw", "away_win", "over_2_5", "under_2_5"]:
+        best_market = None
+        best_edge = 0
 
-            if value[outcome] is None:
+        for market, data in markets.items():
+            
+          
+            if data["odds"] is None:
                 continue
 
-            if value[outcome]["value"] > best_value:
-                best_value = value[outcome]["value"]
-                best_outcome = outcome
 
-        if best_outcome and best_value > VALUE_THRESHOLD:
+            if market not in ["home_win", "draw", "away_win"]:
+                continue
+            if data["odds"] < MIN_ODDS:
+                continue
 
-            bets_placed += 1
+            if data["probability"] > 0.7 or data["probability"] < 0.15:
+                continue
 
-            if is_bet_winner(best_outcome, match):
+            if data["edge"] > best_edge:
+                best_edge = data["edge"]
+                best_market = market
 
+
+        if best_market and best_edge > EDGE_THRESHOLD:
+
+            bets += 1
+
+            if bet_wins(best_market, match):
                 wins += 1
-                profit += odds[best_outcome] - STAKE
-
+                profit += odds[best_market] - 1
             else:
-                profit -= STAKE
+                profit -= 1
 
-        matches_tested += 1
+        update_team_stats(match, match.match_date, goals_scored, goals_conceded, matches_played)
 
-        past_matches.append(match)
+        total_home_goals += match.home_score
+        total_away_goals += match.away_score
+        total_matches += 1
 
-    roi = profit / bets_placed if bets_placed else 0
+    roi = profit / bets if bets else 0
 
     return {
-        "matches_tested": matches_tested,
-        "bets_placed": bets_placed,
+        "bets": bets,
         "wins": wins,
         "profit": round(profit, 2),
         "roi": round(roi, 3)
     }
+
+def update_team_stats(match, prediction_date, goals_scored, goals_conceded, matches_played):
+
+    weight = match_weight(match.match_date, prediction_date)
+
+    home = match.home_team_id
+    away = match.away_team_id
+
+    goals_scored[home] += match.home_score * weight
+    goals_conceded[home] += match.away_score * weight
+
+    goals_scored[away] += match.away_score * weight
+    goals_conceded[away] += match.home_score * weight
+
+    matches_played[home] += weight
+    matches_played[away] += weight
+
+def bet_wins(market, match):
+
+    if market == "home_win":
+        return match.home_score > match.away_score
+
+    if market == "away_win":
+        return match.away_score > match.home_score
+
+    if market == "draw":
+        return match.home_score == match.away_score
+
+    if market == "over_2_5":
+        return (match.home_score + match.away_score) > 2
+
+    if market == "under_2_5":
+        return (match.home_score + match.away_score) <= 2
+
+    return False

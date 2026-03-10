@@ -23,9 +23,9 @@ from rest_framework.routers import DefaultRouter
 from teams.views import TeamViewSet
 from players.views import PlayerViewSet
 from matches.views import MatchViewSet, PlayerMatchStatsViewSet
-from predictions.views import PredictionViewSet
+
 from analytics.views import BettingOddsViewSet
-from predictions.views import MatchPredictionView, ValueBetView, BacktestView
+
 
 router = DefaultRouter()
 
@@ -33,7 +33,7 @@ router.register("teams", TeamViewSet)
 router.register("players", PlayerViewSet)
 router.register("matches", MatchViewSet)
 router.register("player-match-stats", PlayerMatchStatsViewSet)
-router.register("predictions", PredictionViewSet)
+
 router.register("betting-odds", BettingOddsViewSet)
 
 urlpatterns = [
@@ -41,7 +41,5 @@ urlpatterns = [
     path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
     path("api/docs/", SpectacularSwaggerView.as_view(url_name="schema")),
     path("api/", include(router.urls)),
-    path("api/predict-match/", MatchPredictionView.as_view()),
-    path("api/value-bet/", ValueBetView.as_view()),
-    path("api/backtest/", BacktestView.as_view()),
+    path("api/predictions/", include("predictions.urls")),
 ]

@@ -1,61 +1,55 @@
-def decimal_odds_to_probability(odds):
-    return 1 / odds
+def expected_value(prob, odds):
+
+    if odds is None:
+        return None
+
+    return prob * odds - 1
 
 
-def calculate_value(model_prob, odds):
+def evaluate_markets(predictions, odds):
 
-    bookmaker_prob = decimal_odds_to_probability(odds)
+    markets = {}
 
-    value = model_prob - bookmaker_prob
+    # normalize 1X2 probabilities
+    if odds["home_win"] and odds["draw"] and odds["away_win"]:
+        p_home = 1 / odds["home_win"]
+        p_draw = 1 / odds["draw"]
+        p_away = 1 / odds["away_win"]
 
-    return {
-        "bookmaker_probability": round(bookmaker_prob, 3),
-        "model_probability": round(model_prob, 3),
-        "value": round(value, 3)
-    }
+        total = p_home + p_draw + p_away
 
+        bookmaker_probs = {
+            "home_win": p_home / total,
+            "draw": p_draw / total,
+            "away_win": p_away / total,
+        }
+    else:
+        bookmaker_probs = {}
 
-def evaluate_match_value(predictions, odds):
+    for market in predictions:
 
-    value = {}
+        if market not in odds:
+            continue
 
-    def compute_value(model_prob, market_odds):
+        if odds[market] is None:
+            continue
 
-        if market_odds is None:
-            return None
+        model_prob = predictions[market]
 
-        bookmaker_prob = 1 / market_odds
+        if market in bookmaker_probs:
+            bookmaker_prob = bookmaker_probs[market]
+        else:
+            bookmaker_prob = 1 / odds[market]
 
-        return {
-            "model_probability": model_prob,
+        edge = model_prob - bookmaker_prob
+        ev = model_prob * odds[market] - 1
+
+        markets[market] = {
+            "probability": model_prob,
             "bookmaker_probability": bookmaker_prob,
-            "value": model_prob - bookmaker_prob
+            "odds": odds[market],
+            "edge": edge,
+            "ev": ev
         }
 
-
-    value["home_win"] = compute_value(
-        predictions["home_win_probability"],
-        odds["home_win"]
-    )
-
-    value["draw"] = compute_value(
-        predictions["draw_probability"],
-        odds["draw"]
-    )
-
-    value["away_win"] = compute_value(
-        predictions["away_win_probability"],
-        odds["away_win"]
-    )
-
-    value["over_2_5"] = compute_value(
-        predictions["over_2_5_goals"],
-        odds["over_2_5"]
-    )
-
-    value["under_2_5"] = compute_value(
-        predictions["under_2_5_goals"],
-        odds["under_2_5"]
-    )
-
-    return value
+    return markets

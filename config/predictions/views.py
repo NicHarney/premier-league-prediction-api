@@ -1,96 +1,95 @@
-from django.shortcuts import render
-from rest_framework import viewsets
-from .models import Prediction
-from .serializers import PredictionSerializer
-from rest_framework.views import APIView
+from rest_framework.decorators import api_view
 from rest_framework.response import Response
-
-from teams.models import Team
-from matches.models import Match
-
-from predictions.serializers import MatchPredictionSerializer, ValueBetSerializer
-from predictions.services.poisson_model import predict_match
+from rest_framework import status
 
 from django.db.models import Avg
-from predictions.services.expected_goals import calculate_expected_goals
-from predictions.services.value_bets import evaluate_match_value
+from matches.models import Match
+from predictions.services.poisson_model import predict_match
+from predictions.services.value_bets import evaluate_markets
 from predictions.services.backtest import run_backtest
-
-# Create your views here.
-
-class PredictionViewSet(viewsets.ModelViewSet):
-    queryset = Prediction.objects.select_related("match")
-    serializer_class = PredictionSerializer
+from teams.models import Team
+from predictions.services.expected_goals import calculate_expected_goals
 
 
-class MatchPredictionView(APIView):
 
-    def post(self, request):
-        serializer = MatchPredictionSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
+@api_view(["POST"])
+def predict_match_view(request):
 
-        home_team = Team.objects.get(id=serializer.validated_data["home_team"])
-        away_team = Team.objects.get(id=serializer.validated_data["away_team"])
-
-        league_home_avg = Match.objects.aggregate(avg=Avg("home_score"))["avg"]
-        league_away_avg = Match.objects.aggregate(avg=Avg("away_score"))["avg"]
-
-        home_xg, away_xg = calculate_expected_goals(
-            home_team,
-            away_team,
-            league_home_avg,
-            league_away_avg
+    try:
+        home_team_id = int(request.data.get("home_team"))
+        away_team_id = int(request.data.get("away_team"))
+    except (TypeError, ValueError):
+        return Response(
+            {"error": "Invalid team IDs"},
+            status=status.HTTP_400_BAD_REQUEST,
         )
+    home_team = Team.objects.get(id=home_team_id)
+    away_team = Team.objects.get(id=away_team_id)
 
-        probabilities = predict_match(home_xg, away_xg)
-        return Response({
+    league_home_avg = Match.objects.aggregate(
+        Avg("home_score")
+    )["home_score__avg"]
+
+    league_away_avg = Match.objects.aggregate(
+        Avg("away_score")
+    )["away_score__avg"]
+
+    home_xg, away_xg = calculate_expected_goals(
+        home_team,
+        away_team,
+        league_home_avg,
+        league_away_avg
+    )
+    predictions = predict_match(home_xg, away_xg)
+
+    return Response(
+        {
             "home_team": home_team.name,
             "away_team": away_team.name,
-            "expected_home_goals": home_xg,
-            "expected_away_goals": away_xg,
-            **probabilities,
-        })
+            "home_xg": home_xg,
+            "away_xg": away_xg,
+            "predictions": predictions,
+        }
+    )
 
-class ValueBetView(APIView):
 
-    def post(self, request):
+@api_view(["POST"])
+def value_bet_view(request):
 
-        serializer = ValueBetSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-
-        data = serializer.validated_data
-
-        home_team = Team.objects.get(id=data["home_team"])
-        away_team = Team.objects.get(id=data["away_team"])
-
-        league_home_avg = Match.objects.aggregate(avg=Avg("home_score"))["avg"]
-        league_away_avg = Match.objects.aggregate(avg=Avg("away_score"))["avg"]
-
-        home_xg, away_xg = calculate_expected_goals(
-            home_team, 
-            away_team,
-            league_home_avg,
-            league_away_avg
+    try:
+        home_xg = float(request.data.get("home_xg"))
+        away_xg = float(request.data.get("away_xg"))
+    except (TypeError, ValueError):
+        return Response(
+            {"error": "Invalid expected goals values"},
+            status=status.HTTP_400_BAD_REQUEST,
         )
 
-        predictions = predict_match(home_xg, away_xg)
+    odds = request.data.get("odds")
 
-        odds = {
-            "home_win": data["home_win_odds"],
-            "draw": data["draw_odds"],
-            "away_win": data["away_win_odds"]
+    if not odds:
+        return Response(
+            {"error": "Odds must be provided"},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+
+    predictions = predict_match(home_xg, away_xg)
+
+    markets = evaluate_markets(predictions, odds)
+
+    return Response(
+        {
+            "predictions": predictions,
+            "markets": markets,
         }
+    )
 
-        value_analysis = evaluate_match_value(predictions, odds)
 
-        return Response({
-            "match": f"{home_team.name} vs {away_team.name}",
-            "model_predictions": predictions,
-            "value_analysis": value_analysis
-        })
+@api_view(["GET"])
+def backtest_view(request):
 
-class BacktestView(APIView):
+    matches = Match.objects.select_related("odds").all()
 
-    def get(self, request):
-        results = run_backtest()
-        return Response(results)
+    results = run_backtest(matches)
+
+    return Response(results)
