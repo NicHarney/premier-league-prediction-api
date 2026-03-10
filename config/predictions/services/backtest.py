@@ -8,7 +8,23 @@ from analytics.services.weighting import match_weight
 
 EDGE_THRESHOLD = 0.12
 MIN_ODDS = 1.7
+PROBABILITY_SHRINKAGE = 0.9
 
+def shrink_probabilities(predictions):
+    for key in ["home_win", "draw", "away_win"]:
+        predictions[key] *= PROBABILITY_SHRINKAGE
+
+    total = (
+        predictions["home_win"] +
+        predictions["draw"] +
+        predictions["away_win"]
+    )
+
+    predictions["home_win"] /= total
+    predictions["draw"] /= total
+    predictions["away_win"] /= total
+
+    return predictions
 
 def run_backtest(matches):
 
@@ -57,6 +73,8 @@ def run_backtest(matches):
         )
 
         predictions = predict_match(home_xg, away_xg)
+
+        predictions = shrink_probabilities(predictions)
 
         odds = {
             "home_win": match.odds.home_win_odds if match.odds else None,
