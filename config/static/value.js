@@ -59,6 +59,28 @@ async function calculateValue() {
 
     });
 
+    if(!response.ok) {
+
+        const container = document.getElementById("results");
+
+        if(response.status === 429) {
+
+            container.innerHTML = `
+            <div class="alert alert-warning">
+            Too many requests. Please wait a moment and try again.
+            </div>
+            `;
+            return;
+
+        }
+        container.innerHTML = `
+        <div class="alert alert-danger">
+        Server error (${response.status}). Please try again later.
+        </div>
+        `;
+        return; 
+    }
+    
     const data = await response.json();
 
     displayResults(data.data);

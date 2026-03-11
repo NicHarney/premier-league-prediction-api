@@ -11,10 +11,13 @@ from teams.models import Team
 from predictions.services.expected_goals import calculate_expected_goals
 from django.shortcuts import get_object_or_404
 from django.shortcuts import render
+from .throttles import PredictionThrottle, BacktestThrottle
+from rest_framework.decorators import throttle_classes
 
 
 
 @api_view(["POST"])
+@throttle_classes([PredictionThrottle])
 def predict_match_view(request):
 
     try:
@@ -112,6 +115,7 @@ def predict_match_view(request):
 
 
 @api_view(["POST"])
+@throttle_classes([PredictionThrottle])
 def value_bet_view(request):
 
     try:
@@ -208,6 +212,7 @@ def value_bet_view(request):
 
 
 @api_view(["GET"])
+@throttle_classes([BacktestThrottle])
 def backtest_view(request):
 
     try:
