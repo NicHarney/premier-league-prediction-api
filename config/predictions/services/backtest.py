@@ -131,7 +131,8 @@ def run_backtest(matches):
     roi = profit / bets if bets else 0
 
     return {
-        "bets": bets,
+        "matches_tested": total_matches,
+        "bets_placed": bets,
         "wins": wins,
         "profit": round(profit, 2),
         "roi": round(roi, 3)

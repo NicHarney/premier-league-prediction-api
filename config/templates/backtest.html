@@ -1,0 +1,62 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<title>Backtest Results</title>
+
+<link rel="stylesheet"
+href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+
+<link rel="stylesheet" href="{% static 'styles.css' %}">
+
+</head>
+
+<body class="bg-light">
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+
+<div class="container">
+
+<a class="navbar-brand" href="/">PL Prediction Engine</a>
+
+<div class="navbar-nav">
+
+<a class="nav-link" href="/">Home</a>
+<a class="nav-link" href="/predict/">Predict</a>
+<a class="nav-link" href="/value/">Value Betting</a>
+<a class="nav-link" href="/backtest/">Backtest</a>
+<a class="nav-link" href="/explorer/">Data Explorer</a>
+<a class="nav-link" href="/api/docs/">API Docs</a>
+
+</div>
+
+</div>
+
+</nav>
+
+<div class="container mt-5">
+
+<h2 class="text-center mb-4">
+Model Backtest Results
+</h2>
+
+<div class="text-center mb-4">
+
+<button class="btn btn-warning" onclick="runBacktest()">
+Run Backtest
+</button>
+
+</div>
+
+<div id="results"></div>
+
+</div>
+
+<script src="{% static 'backtest.js' %}"></script>
+
+</body>
+
+</html>

@@ -8,7 +8,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 # Create your views here.
 
 class PlayerViewSet(viewsets.ModelViewSet):
-    queryset = Player.objects.select_related("team")
+    queryset = Player.objects.select_related("team").all()
     serializer_class = PlayerSerializer
 
 
@@ -21,4 +21,5 @@ class PlayerViewSet(viewsets.ModelViewSet):
     filterset_fields = ["team", "position"]
 
     search_fields = ["name"]
-    ordering_fields = ["name"]
+    ordering_fields = ["name", "team"]
+    ordering = ["name"]

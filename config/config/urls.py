@@ -26,6 +26,23 @@ from matches.views import MatchViewSet, PlayerMatchStatsViewSet
 
 from analytics.views import BettingOddsViewSet
 
+from predictions.views import frontend_view
+from django.shortcuts import render
+
+def home(request):
+    return render(request, "index.html")
+
+def predict_page(request):
+    return render(request, "predict.html")
+
+def value_page(request):
+    return render(request, "value.html")
+
+def backtest_page(request):
+    return render(request, "backtest.html")
+
+def explorer_page(request):
+    return render(request, "explorer.html")
 
 router = DefaultRouter()
 
@@ -37,9 +54,15 @@ router.register("player-match-stats", PlayerMatchStatsViewSet)
 router.register("betting-odds", BettingOddsViewSet)
 
 urlpatterns = [
+    path("", frontend_view),
+    path("predict/", predict_page),
+    path("value/", value_page),
+    path("backtest/", backtest_page),
+    path("explorer/", explorer_page),
     path("admin/", admin.site.urls),
     path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
     path("api/docs/", SpectacularSwaggerView.as_view(url_name="schema")),
     path("api/", include(router.urls)),
     path("api/predictions/", include("predictions.urls")),
+    
 ]
