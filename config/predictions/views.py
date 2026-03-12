@@ -13,6 +13,7 @@ from django.shortcuts import get_object_or_404
 from django.shortcuts import render
 from .throttles import PredictionThrottle, BacktestThrottle
 from rest_framework.decorators import throttle_classes
+from .serializers import MatchPredictionSerializer, ValueBetSerializer
 
 
 
@@ -20,31 +21,23 @@ from rest_framework.decorators import throttle_classes
 @throttle_classes([PredictionThrottle])
 def predict_match_view(request):
 
+    
     try:
 
-        home_team_id = request.data.get("home_team")
-        away_team_id = request.data.get("away_team")
+        serializer = MatchPredictionSerializer(data=request.data)
 
-        if home_team_id is None or away_team_id is None:
-            return Response(
-                {
-                    "status": "error",
-                    "message": "home_team and away_team are required"
-                },
-                status=status.HTTP_400_BAD_REQUEST,
-            )
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=400)
 
-        try:
-            home_team_id = int(home_team_id)
-            away_team_id = int(away_team_id)
-        except ValueError:
-            return Response(
-                {
-                    "status": "error",
-                    "message": "Team IDs must be integers"
-                },
-                status=status.HTTP_400_BAD_REQUEST,
-            )
+        home_team_id = serializer.validated_data["home_team"]
+        away_team_id = serializer.validated_data["away_team"]
+
+     
+
+        
+        #home_team_id = int(home_team_id)
+        #away_team_id = int(away_team_id)
+   
 
         home_team = get_object_or_404(Team, id=home_team_id)
         away_team = get_object_or_404(Team, id=away_team_id)
@@ -117,35 +110,25 @@ def predict_match_view(request):
 @api_view(["POST"])
 @throttle_classes([PredictionThrottle])
 def value_bet_view(request):
-
-    try:
-        home_team_id = int(request.data.get("home_team"))
-        away_team_id = int(request.data.get("away_team"))
-    except (TypeError, ValueError):
+  
+    serializer = ValueBetSerializer(data=request.data)
+    if not serializer.is_valid():
         return Response(
-            {
-                "status": "error",
-                "message": "Invalid team IDs"
-            },
-            status=status.HTTP_400_BAD_REQUEST,
+            serializer.errors,
+            status=status.HTTP_400_BAD_REQUEST
         )
 
-    if home_team_id == away_team_id:
-        return Response(
-            {
-                "status": "error",
-                "message": "home_team and away_team cannot be the same"
-            },
-            status=status.HTTP_400_BAD_REQUEST,
-        )
+    home_team_id = serializer.validated_data["home_team"]
+    away_team_id = serializer.validated_data["away_team"]
+
     home_team = get_object_or_404(Team, id=home_team_id)
     away_team = get_object_or_404(Team, id=away_team_id)
 
    
 
-    home_odds = request.data.get("home_odds")
-    draw_odds = request.data.get("draw_odds")
-    away_odds = request.data.get("away_odds")
+    home_odds = serializer.validated_data["home_odds"]
+    draw_odds = serializer.validated_data["draw_odds"]
+    away_odds = serializer.validated_data["away_odds"]
 
     if not home_odds or not draw_odds or not away_odds:
         return Response(

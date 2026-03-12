@@ -1,3 +1,42 @@
+function handleApiError(status, data) {
+
+    const container = document.getElementById("results");
+
+    if (status === 400) {
+
+        const errors = Object.entries(data)
+            .map(([field, messages]) =>
+                `<li><strong>${field}</strong>: ${messages.join(", ")}</li>`
+            )
+            .join("");
+
+        container.innerHTML = `
+        <div class="alert alert-warning">
+        <strong>Input error:</strong>
+        <ul>${errors}</ul>
+        </div>
+        `;
+
+        return;
+    }
+
+    if (status === 429) {
+
+        container.innerHTML = `
+        <div class="alert alert-danger">
+        Too many requests. Please wait before trying again.
+        </div>
+        `;
+
+        return;
+    }
+
+    container.innerHTML = `
+    <div class="alert alert-danger">
+    Server error (${status})
+    </div>
+    `;
+}
 async function loadTeams() {
 
     const response = await fetch("/api/teams/");
@@ -59,29 +98,16 @@ async function calculateValue() {
 
     });
 
+    const data = await response.json();
+
+
     if(!response.ok) {
 
-        const container = document.getElementById("results");
-
-        if(response.status === 429) {
-
-            container.innerHTML = `
-            <div class="alert alert-warning">
-            Too many requests. Please wait a moment and try again.
-            </div>
-            `;
-            return;
-
-        }
-        container.innerHTML = `
-        <div class="alert alert-danger">
-        Server error (${response.status}). Please try again later.
-        </div>
-        `;
-        return; 
+       handleApiError(response.status,data);
+       return;
     }
     
-    const data = await response.json();
+    
 
     displayResults(data.data);
 
