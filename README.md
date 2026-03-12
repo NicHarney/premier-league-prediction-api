@@ -40,5 +40,104 @@ A Dixon-Coles adjustment is applied to improve the probability of low-scoring ou
 
 ### Value Betting Analytics ###
 After calculating probabilities, the system can then compare results to bookmaker odds to identify positive value bets. The expected value is calculated by: 
-- ==EV = (model_probability x odds) -1==
+- EV = (model_probability x odds) -1
+If EV is positive -> possible betting opportunity.
 
+### Historical Backtesting ###
+The API has a backtesting engine that evaluates model accuracy from previous matches. It simulates placing a bet when the predicted edge exceeds a threshold and this predicted edge provides a positve possible betting opportunity.
+It then returns:
+- number of matches tested
+- number of bets placed
+- number of wins
+- total profit
+- return on investment (ROI)
+This provides a quantative evaluation of model performance.
+
+### Data Explorer Interface ###
+A frontend feature allowing users to analyse the database.
+
+The interface supports:
+- Predicting match outcomes
+- Calculating value bets
+- running model backtests
+- exploring teams and matches
+- filtering historical seasons
+
+## System Architecture ## 
+Modular Django architecture:
+- project
+  - analytics
+      - management
+        - commands
+            - calculate_team_strengths.py
+      - migrations
+      - services
+    - admin.py
+    - apps.py
+    - models.py
+    - serializers.py 
+    - views.py
+  - config
+    - settings.py
+    - urls.py
+  - matches
+    - management
+      - commands
+        - load_football_data.py
+    - migrations
+    - tests
+      - test_matches.py
+    - admin.py
+    - apps.py
+    - managers.py
+    - models.py
+    - serializers.py
+    - views.py
+  - players
+    - migrations
+    - admin.py
+    - apps.py
+    - models.py
+    - serializers.py
+    - views.py
+  - predictions
+    - migrations
+    - services
+      - backtest.py
+      - dixon_coles.py
+      - expected_goals.py
+      - poisson_model.py
+      - value_bets.py
+    - tests
+      - test_backtest.py
+      - test_predictions.py
+      - test_throttling.py
+      - test_value.py
+    - admin.py
+    - apps.py
+    - models.py
+    - serializers.py
+    - throttles.py
+    - urls.py
+    - views.py
+  - static
+    - backtest.js
+    - explorer.js
+    - predict.js
+    - styles.css
+    - value.js
+  - teams
+    - migrations
+    - tests
+      - test_teams.py
+    - admin.py
+    - apps.py
+    - models.py
+    - serializers.py
+    - views.py
+  - templates
+    - backtest.html
+    - explorer.html
+    - index.html
+    - predict.html
+    - value.html
