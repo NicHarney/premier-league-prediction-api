@@ -72,6 +72,8 @@ Modular Django architecture:
             - calculate_team_strengths.py
       - migrations
       - services
+        - team_strength_service.py
+        - weighting.py
     - admin.py
     - apps.py
     - models.py
