@@ -212,6 +212,6 @@ Example test categories:
 - matches/tests
 - teams/tests
 
-** Tests are executed using:**
-==python manage.py test==
+**Tests are executed using:**
+**python manage.py test**
 
