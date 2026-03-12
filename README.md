@@ -1,1 +1,1 @@
-# premier-league-prediction-api
+# Premier League Prediction & Betting Value analytics API #
