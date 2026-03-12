@@ -213,5 +213,87 @@ Example test categories:
 - teams/tests
 
 **Tests are executed using:**
+
 **python manage.py test**
+
+## API Documentation ##
+Interactive API documentation is available through Swagger:
+**api/docs**
+
+This allows exploration of endpoints and request formats directly from the browser.
+
+## Example Endpoints ##
+### Predict Match Outcome ###
+**POST /api/predictions/predict**
+
+Input
+{
+  "home_team":1,
+  "away_team":2
+}
+
+Response includes:
+- expected goals
+- win probabilities
+- scoreline probabilities
+
+### Value Betting Analysis ###
+**POST /api/predictions/value**
+{
+  "home_team":1,
+  "away_team":2,
+  "home_odds":2.2,
+  "draw_odds":3.4,
+  "away_odds":3.1
+}
+
+Returns expected value for each market
+
+### Backtesting ###
+**GET /api/predictions/backtest**
+Returns model performance metrics including ROI.
+
+### Other endpoints ###
+-**/api/teams**
+- **api/matches**
+- **api/players**
+- **api/player-match-stats**
+- **api/betting-odds**
+
+For teams and matches, entering urls such as "/api/teams/1" returns unique teams/matches which can be updated. Through these Urls users can also create new teams/matches that will be live inputted into the database.
+
+## Data Sources ##
+Match and odds data are sourced from publicly available datasets. These datasets provide:
+- historical match results
+- bookmaker odds
+- season statistics
+
+## Running the Project ##
+### Install dependencies ###
+**pip install -r requirements.txt**
+
+### Apply migrations ###
+**python manage.py migrate**
+
+### Load dataset ###
+**python manage.py load_football_data**
+
+## Start Server ##
+**python manage.py runserver**
+
+## Run tests ##
+**python manage.py test**
+
+## Technologies Used ##
+- python
+- Django
+- Django REST Framework
+- SQLite
+- Docker
+- Swagger (drf-spectacular)
+- JavaScript frontend
+
+## Conclusion ##
+This project demonstrates the application of software enginnering principles to API design, combining statistical modelling, secure RESTful architecture and comprehensive testing to produce a robust sports analytics platform.
+
 
