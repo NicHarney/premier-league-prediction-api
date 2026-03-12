@@ -143,3 +143,38 @@ Modular Django architecture:
     - index.html
     - predict.html
     - value.html
+
+### Architecture Principles ###
+- Domain-driven app separation
+- Service layer for business logic
+- RESTful API design
+- Serializer validation for input security
+- Modular prediction engine
+
+This structure focuses on **maintainability, scalability and testability**.
+
+## Data Models ##
+Key entities include:
+
+### Team ###
+Stores team information and derived stats such as attack and defence strengths.
+
+### Player ###
+Would represent individual players and their team -> out of scope.
+
+### Match ###
+Stores match results including:
+- home team
+- away team
+- goals scored
+- season 
+- match date
+
+### Player Match Stats
+Would store per match player performance such as goals, assists, shots and fouls.
+
+### Betting odds ###
+Stores bookmaker odds for match outcomes used in value analysis.
+
+## Security Features ##
+
