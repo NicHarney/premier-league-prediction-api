@@ -13,3 +13,32 @@ This project includes advanced backend engineering concepts including statistica
 
 ## Key Features ##
 ### Core API Functionality ###
+Provides full CRUD support for the following entities:
+- Teams
+- Matches
+- Players (no data populated)
+- Player Match Statistics (no data populated)
+- Betting odds
+
+Endpoints support filtering, searching and ordering to allow flexible data access.
+
+### Predictive Match Modelling ###
+The API estimates match outcomes using a Poisson-based statistical model.
+
+The model:
+1. Calculates team attack and defence strength, separate for home and away
+2. Uses league goal averages
+3. Computes expected goals
+4. Simulates match scorelines probabilistically
+From this it dervies probabilities for:
+- Home win
+- Draw
+- Away win
+- Over/Under 2.5 goals
+- Most likely scorelines
+A Dixon-Coles adjustment is applied to improve the probability of low-scoring outcomes, as per industry standard.
+
+### Value Betting Analytics ###
+After calculating probabilities, the system can then compare results to bookmaker odds to identify positive value bets. The expected value is calculated by: 
+- ==EV = (model_probability x odds) -1 ==
+
