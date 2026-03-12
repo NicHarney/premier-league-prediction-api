@@ -178,3 +178,40 @@ Stores bookmaker odds for match outcomes used in value analysis.
 
 ## Security Features ##
 
+### Rate Limiting ###
+Custom throttling classes prevent abuse of prediction and backtesting endpoints
+
+### Input Validation
+All API inputs are validated using serializers to enforce:
+- valid team IDs
+- realistic odds values
+- prevention of invalid matchups
+- correct data types
+
+### Error Handling ###
+Endpoints return structured JSON responses with appropriate HTTP status codes:
+- 200 OK
+- 400 Bad Request
+- 404 Not Found
+- 429 Too many requests
+- 500 Internal Server Error
+
+## Testing ##
+A comprehensive automated test suite ensures reliability and correctness.
+
+Tests cover:
+- API Endpoints
+- Serializer validation
+- rate limiting
+- prediction logic
+- value betting calculations
+- filtering functionality
+
+Example test categories:
+- predictions/tests
+- matches/tests
+- teams/tests
+
+** Tests are executed using:**
+==python manage.py test==
+
