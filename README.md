@@ -40,5 +40,5 @@ A Dixon-Coles adjustment is applied to improve the probability of low-scoring ou
 
 ### Value Betting Analytics ###
 After calculating probabilities, the system can then compare results to bookmaker odds to identify positive value bets. The expected value is calculated by: 
-- ==EV = (model_probability x odds) -1 ==
+- ==EV = (model_probability x odds) -1==
 
