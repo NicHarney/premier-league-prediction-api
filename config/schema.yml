@@ -1,0 +1,1638 @@
+openapi: 3.0.3
+info:
+  title: Football Prediction API
+  version: 1.0.0
+  description: API for football match predictions and analytics
+paths:
+  /api/betting-odds/:
+    get:
+      operationId: betting_odds_list
+      parameters:
+      - in: query
+        name: match
+        schema:
+          type: integer
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      tags:
+      - betting-odds
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedBettingOddsList'
+          description: ''
+    post:
+      operationId: betting_odds_create
+      tags:
+      - betting-odds
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BettingOdds'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/BettingOdds'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/BettingOdds'
+        required: true
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BettingOdds'
+          description: ''
+  /api/betting-odds/{id}/:
+    get:
+      operationId: betting_odds_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this betting odds.
+        required: true
+      tags:
+      - betting-odds
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BettingOdds'
+          description: ''
+    put:
+      operationId: betting_odds_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this betting odds.
+        required: true
+      tags:
+      - betting-odds
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BettingOdds'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/BettingOdds'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/BettingOdds'
+        required: true
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BettingOdds'
+          description: ''
+    patch:
+      operationId: betting_odds_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this betting odds.
+        required: true
+      tags:
+      - betting-odds
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedBettingOdds'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedBettingOdds'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedBettingOdds'
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BettingOdds'
+          description: ''
+    delete:
+      operationId: betting_odds_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this betting odds.
+        required: true
+      tags:
+      - betting-odds
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '204':
+          description: No response body
+  /api/matches/:
+    get:
+      operationId: matches_list
+      parameters:
+      - in: query
+        name: away_team
+        schema:
+          type: integer
+      - in: query
+        name: home_team
+        schema:
+          type: integer
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - in: query
+        name: season
+        schema:
+          type: string
+      tags:
+      - matches
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedMatchList'
+          description: ''
+    post:
+      operationId: matches_create
+      tags:
+      - matches
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Match'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Match'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Match'
+        required: true
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Match'
+          description: ''
+  /api/matches/{id}/:
+    get:
+      operationId: matches_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this match.
+        required: true
+      tags:
+      - matches
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Match'
+          description: ''
+    put:
+      operationId: matches_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this match.
+        required: true
+      tags:
+      - matches
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Match'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Match'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Match'
+        required: true
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Match'
+          description: ''
+    patch:
+      operationId: matches_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this match.
+        required: true
+      tags:
+      - matches
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedMatch'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedMatch'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedMatch'
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Match'
+          description: ''
+    delete:
+      operationId: matches_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this match.
+        required: true
+      tags:
+      - matches
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '204':
+          description: No response body
+  /api/matches/{id}/player_stats/:
+    get:
+      operationId: matches_player_stats_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this match.
+        required: true
+      tags:
+      - matches
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Match'
+          description: ''
+  /api/player-match-stats/:
+    get:
+      operationId: player_match_stats_list
+      parameters:
+      - in: query
+        name: match
+        schema:
+          type: integer
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - in: query
+        name: player
+        schema:
+          type: integer
+      - in: query
+        name: team
+        schema:
+          type: integer
+      tags:
+      - player-match-stats
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedPlayerMatchStatsList'
+          description: ''
+    post:
+      operationId: player_match_stats_create
+      tags:
+      - player-match-stats
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PlayerMatchStats'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PlayerMatchStats'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PlayerMatchStats'
+        required: true
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlayerMatchStats'
+          description: ''
+  /api/player-match-stats/{id}/:
+    get:
+      operationId: player_match_stats_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this player match stats.
+        required: true
+      tags:
+      - player-match-stats
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlayerMatchStats'
+          description: ''
+    put:
+      operationId: player_match_stats_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this player match stats.
+        required: true
+      tags:
+      - player-match-stats
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PlayerMatchStats'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PlayerMatchStats'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PlayerMatchStats'
+        required: true
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlayerMatchStats'
+          description: ''
+    patch:
+      operationId: player_match_stats_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this player match stats.
+        required: true
+      tags:
+      - player-match-stats
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedPlayerMatchStats'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedPlayerMatchStats'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedPlayerMatchStats'
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlayerMatchStats'
+          description: ''
+    delete:
+      operationId: player_match_stats_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this player match stats.
+        required: true
+      tags:
+      - player-match-stats
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '204':
+          description: No response body
+  /api/players/:
+    get:
+      operationId: players_list
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      - in: query
+        name: team
+        schema:
+          type: integer
+      tags:
+      - players
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedPlayerList'
+          description: ''
+    post:
+      operationId: players_create
+      tags:
+      - players
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Player'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Player'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Player'
+        required: true
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Player'
+          description: ''
+  /api/players/{id}/:
+    get:
+      operationId: players_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this player.
+        required: true
+      tags:
+      - players
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Player'
+          description: ''
+    put:
+      operationId: players_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this player.
+        required: true
+      tags:
+      - players
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Player'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Player'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Player'
+        required: true
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Player'
+          description: ''
+    patch:
+      operationId: players_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this player.
+        required: true
+      tags:
+      - players
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedPlayer'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedPlayer'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedPlayer'
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Player'
+          description: ''
+    delete:
+      operationId: players_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this player.
+        required: true
+      tags:
+      - players
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '204':
+          description: No response body
+  /api/predictions/backtest/:
+    get:
+      operationId: predictions_backtest_retrieve
+      tags:
+      - predictions
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/predictions/predict/:
+    post:
+      operationId: predictions_predict_create
+      tags:
+      - predictions
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MatchPrediction'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/MatchPrediction'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/MatchPrediction'
+        required: true
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+                description: Unspecified response body
+          description: ''
+  /api/predictions/value/:
+    post:
+      operationId: predictions_value_create
+      tags:
+      - predictions
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ValueBet'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ValueBet'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ValueBet'
+        required: true
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+                description: Unspecified response body
+          description: ''
+  /api/schema/:
+    get:
+      operationId: schema_retrieve
+      description: |-
+        OpenApi3 schema for this API. Format can be selected via content negotiation.
+
+        - YAML: application/vnd.oai.openapi
+        - JSON: application/vnd.oai.openapi+json
+      parameters:
+      - in: query
+        name: format
+        schema:
+          type: string
+          enum:
+          - json
+          - yaml
+      - in: query
+        name: lang
+        schema:
+          type: string
+          enum:
+          - af
+          - ar
+          - ar-dz
+          - ast
+          - az
+          - be
+          - bg
+          - bn
+          - br
+          - bs
+          - ca
+          - ckb
+          - cs
+          - cy
+          - da
+          - de
+          - dsb
+          - el
+          - en
+          - en-au
+          - en-gb
+          - eo
+          - es
+          - es-ar
+          - es-co
+          - es-mx
+          - es-ni
+          - es-ve
+          - et
+          - eu
+          - fa
+          - fi
+          - fr
+          - fy
+          - ga
+          - gd
+          - gl
+          - he
+          - hi
+          - hr
+          - hsb
+          - ht
+          - hu
+          - hy
+          - ia
+          - id
+          - ig
+          - io
+          - is
+          - it
+          - ja
+          - ka
+          - kab
+          - kk
+          - km
+          - kn
+          - ko
+          - ky
+          - lb
+          - lt
+          - lv
+          - mk
+          - ml
+          - mn
+          - mr
+          - ms
+          - my
+          - nb
+          - ne
+          - nl
+          - nn
+          - os
+          - pa
+          - pl
+          - pt
+          - pt-br
+          - ro
+          - ru
+          - sk
+          - sl
+          - sq
+          - sr
+          - sr-latn
+          - sv
+          - sw
+          - ta
+          - te
+          - tg
+          - th
+          - tk
+          - tr
+          - tt
+          - udm
+          - ug
+          - uk
+          - ur
+          - uz
+          - vi
+          - zh-hans
+          - zh-hant
+      tags:
+      - schema
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/vnd.oai.openapi:
+              schema:
+                type: object
+                additionalProperties: {}
+            application/yaml:
+              schema:
+                type: object
+                additionalProperties: {}
+            application/vnd.oai.openapi+json:
+              schema:
+                type: object
+                additionalProperties: {}
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+  /api/teams/:
+    get:
+      operationId: teams_list
+      parameters:
+      - in: query
+        name: id
+        schema:
+          type: integer
+      - in: query
+        name: name
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - teams
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedTeamList'
+          description: ''
+    post:
+      operationId: teams_create
+      tags:
+      - teams
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Team'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Team'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Team'
+        required: true
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Team'
+          description: ''
+  /api/teams/{id}/:
+    get:
+      operationId: teams_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this team.
+        required: true
+      tags:
+      - teams
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Team'
+          description: ''
+    put:
+      operationId: teams_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this team.
+        required: true
+      tags:
+      - teams
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Team'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Team'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/Team'
+        required: true
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Team'
+          description: ''
+    patch:
+      operationId: teams_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this team.
+        required: true
+      tags:
+      - teams
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedTeam'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedTeam'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedTeam'
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Team'
+          description: ''
+    delete:
+      operationId: teams_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this team.
+        required: true
+      tags:
+      - teams
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '204':
+          description: No response body
+  /api/teams/{id}/players/:
+    get:
+      operationId: teams_players_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this team.
+        required: true
+      tags:
+      - teams
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Team'
+          description: ''
+components:
+  schemas:
+    BettingOdds:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        match:
+          type: integer
+        home_team:
+          type: string
+          readOnly: true
+        away_team:
+          type: string
+          readOnly: true
+        match_date:
+          type: string
+          format: date-time
+          readOnly: true
+        home_win_odds:
+          type: number
+          format: double
+        draw_odds:
+          type: number
+          format: double
+        away_win_odds:
+          type: number
+          format: double
+        bookmaker:
+          type: string
+          maxLength: 100
+      required:
+      - away_team
+      - away_win_odds
+      - bookmaker
+      - draw_odds
+      - home_team
+      - home_win_odds
+      - id
+      - match
+      - match_date
+    Match:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        home_team_name:
+          type: string
+          readOnly: true
+        away_team_name:
+          type: string
+          readOnly: true
+        match_date:
+          type: string
+          format: date-time
+        home_score:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+          nullable: true
+        away_score:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+          nullable: true
+        season:
+          type: string
+          maxLength: 9
+        home_team:
+          type: integer
+        away_team:
+          type: integer
+      required:
+      - away_team
+      - away_team_name
+      - home_team
+      - home_team_name
+      - id
+      - match_date
+      - season
+    MatchPrediction:
+      type: object
+      properties:
+        home_team:
+          type: integer
+        away_team:
+          type: integer
+      required:
+      - away_team
+      - home_team
+    PaginatedBettingOddsList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/BettingOdds'
+    PaginatedMatchList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Match'
+    PaginatedPlayerList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Player'
+    PaginatedPlayerMatchStatsList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/PlayerMatchStats'
+    PaginatedTeamList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Team'
+    PatchedBettingOdds:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        match:
+          type: integer
+        home_team:
+          type: string
+          readOnly: true
+        away_team:
+          type: string
+          readOnly: true
+        match_date:
+          type: string
+          format: date-time
+          readOnly: true
+        home_win_odds:
+          type: number
+          format: double
+        draw_odds:
+          type: number
+          format: double
+        away_win_odds:
+          type: number
+          format: double
+        bookmaker:
+          type: string
+          maxLength: 100
+    PatchedMatch:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        home_team_name:
+          type: string
+          readOnly: true
+        away_team_name:
+          type: string
+          readOnly: true
+        match_date:
+          type: string
+          format: date-time
+        home_score:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+          nullable: true
+        away_score:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+          nullable: true
+        season:
+          type: string
+          maxLength: 9
+        home_team:
+          type: integer
+        away_team:
+          type: integer
+    PatchedPlayer:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        team_name:
+          type: string
+          readOnly: true
+        name:
+          type: string
+          maxLength: 100
+        position:
+          type: string
+          maxLength: 50
+        date_of_birth:
+          type: string
+          format: date
+          nullable: true
+        team:
+          type: integer
+    PatchedPlayerMatchStats:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        player_name:
+          type: string
+          readOnly: true
+        minutes_played:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+        goals:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+        assists:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+        shots:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+        shots_on_target:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+        fouls:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+        yellow_cards:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+        red_cards:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+        rolling_shots_3:
+          type: number
+          format: double
+          nullable: true
+        rolling_shots_5:
+          type: number
+          format: double
+          nullable: true
+        rolling_goals_5:
+          type: number
+          format: double
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        player:
+          type: integer
+        team:
+          type: integer
+        match:
+          type: integer
+    PatchedTeam:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 255
+        home_attack_strength:
+          type: number
+          format: double
+        home_defence_strength:
+          type: number
+          format: double
+        away_attack_strength:
+          type: number
+          format: double
+        away_defence_strength:
+          type: number
+          format: double
+    Player:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        team_name:
+          type: string
+          readOnly: true
+        name:
+          type: string
+          maxLength: 100
+        position:
+          type: string
+          maxLength: 50
+        date_of_birth:
+          type: string
+          format: date
+          nullable: true
+        team:
+          type: integer
+      required:
+      - id
+      - name
+      - position
+      - team
+      - team_name
+    PlayerMatchStats:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        player_name:
+          type: string
+          readOnly: true
+        minutes_played:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+        goals:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+        assists:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+        shots:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+        shots_on_target:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+        fouls:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+        yellow_cards:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+        red_cards:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+        rolling_shots_3:
+          type: number
+          format: double
+          nullable: true
+        rolling_shots_5:
+          type: number
+          format: double
+          nullable: true
+        rolling_goals_5:
+          type: number
+          format: double
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        player:
+          type: integer
+        team:
+          type: integer
+        match:
+          type: integer
+      required:
+      - created_at
+      - id
+      - match
+      - minutes_played
+      - player
+      - player_name
+      - team
+    Team:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 255
+        home_attack_strength:
+          type: number
+          format: double
+        home_defence_strength:
+          type: number
+          format: double
+        away_attack_strength:
+          type: number
+          format: double
+        away_defence_strength:
+          type: number
+          format: double
+      required:
+      - id
+      - name
+    ValueBet:
+      type: object
+      properties:
+        home_team:
+          type: integer
+        away_team:
+          type: integer
+        home_odds:
+          type: number
+          format: double
+          maximum: 100
+          minimum: 1.01
+        draw_odds:
+          type: number
+          format: double
+          maximum: 100
+          minimum: 1.01
+        away_odds:
+          type: number
+          format: double
+          maximum: 100
+          minimum: 1.01
+      required:
+      - away_odds
+      - away_team
+      - draw_odds
+      - home_odds
+      - home_team
+  securitySchemes:
+    jwtAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
