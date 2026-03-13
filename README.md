@@ -230,6 +230,10 @@ Example test categories:
 Interactive API documentation is available through Swagger:
 **api/docs**
 
+Full API documentation is provided in this PDF:
+[API Documentation](docs/API_DOCUMENTATION.pdf)
+This documentation includes endpoint descriptions, request schemas, response formats and example payloads generated from the OpenAPI schema.
+
 This allows exploration of endpoints and request formats directly from the browser. All endpoints are seen in this doc, all of them allow users to enter parameters in JSON format. A couple of important things to note for certain searches:
 - For POST /api/betting-odds the user should go to POST /api/matches and create a new match and make note of the ID before adding odds, and when entering odds use this new match ID as the system has in built protection of changing odds in matches already in the system.
 - For PUT /api/betting-odds{id}, team IDs and match ID must line up to protect against invalid inputs, use GET /api/betting-odds to check for valid inputs
@@ -284,10 +288,15 @@ Match and odds data are sourced from publicly available datasets. These datasets
 - season statistics
 
 ## Running the Project ##
+
 ### Install dependencies ###
 **pip install -r requirements.txt**
 
+### Go to config ###
+**cd config** - allows access to manage.py, ensure its the first config folder and not the second which contains settings.py and urls.py.
+
 ### Apply migrations ###
+**python manage.py makemigrations**
 **python manage.py migrate**
 
 ### Load datasets ###
