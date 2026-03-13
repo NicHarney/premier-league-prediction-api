@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from .models import BettingOdds
 
-
+## Serializer for betting odds input validation
 class BettingOddsSerializer(serializers.ModelSerializer):
 
     home_team = serializers.CharField(

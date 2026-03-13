@@ -2,7 +2,7 @@ import math
 
 RHO = -0.1  # typical value from research papers
 
-
+# apply dixon-coles adjustment to favour low scoring games
 def dixon_coles_adjustment(home_goals, away_goals, home_xg, away_xg):
 
     if home_goals == 0 and away_goals == 0:

@@ -4,7 +4,7 @@ from matches.models import Match
 from analytics.services.weighting import match_weight
 from django.utils import timezone
 
-
+# function which calculates team strengths
 def calculate_team_strengths():
 
     matches = Match.objects.select_related("home_team", "away_team")
@@ -59,6 +59,7 @@ def calculate_team_strengths():
             away_conceded += match.home_score * weight
             away_weight += weight
 
+        # calculate attack/defence strengths compared to league average
         avg_home_scored = home_scored / home_weight if home_weight else 0
         avg_home_conceded = home_conceded / home_weight if home_weight else 0
 

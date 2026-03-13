@@ -5,7 +5,7 @@ from predictions.services.dixon_coles import dixon_coles_adjustment
 
 MAX_GOALS = 10
 
-
+# Use poisson distribution to predict match outcomes
 def predict_match(home_xg, away_xg):
 
     # matrix of scoreline probabilities
@@ -18,7 +18,7 @@ def predict_match(home_xg, away_xg):
             adjustment = dixon_coles_adjustment(h, a, home_xg, away_xg)
             score_matrix[h, a] = base_prob * adjustment
 
-    # normalize (important)
+    # normalize 
     score_matrix /= score_matrix.sum()
 
     # match outcomes

@@ -14,7 +14,7 @@ from rest_framework.filters import SearchFilter
 from django_filters.rest_framework import DjangoFilterBackend
 
 # Create your views here.
-
+# view for showing teams
 class TeamViewSet(viewsets.ModelViewSet):
     queryset = Team.objects.all().order_by("name")
     serializer_class = TeamSerializer
@@ -28,7 +28,7 @@ class TeamViewSet(viewsets.ModelViewSet):
 
         try:
             team = get_object_or_404(Team, id=pk)
-            players = Player.objects.filter(current_team=team)
+            players = team.players.all()
             serializer = PlayerSerializer(players, many=True)
             return Response(
                 {

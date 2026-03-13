@@ -83,6 +83,7 @@ class PlayerMatchStats(models.Model):
     # Custom manager for advanced queries
     objects = PlayerMatchStatsManager()
 
+    # add database constraints
     class Meta:
         indexes = [
             models.Index(fields=["player", "match"]),

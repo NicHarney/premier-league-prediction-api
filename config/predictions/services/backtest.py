@@ -5,11 +5,12 @@ from predictions.services.value_bets import evaluate_markets
 from predictions.services.expected_goals import calculate_expected_goals
 from analytics.services.weighting import match_weight
 
-
+# Initialise needed variables
 EDGE_THRESHOLD = 0.12
 MIN_ODDS = 1.7
 PROBABILITY_SHRINKAGE = 0.9
 
+# apply probability shrinkage to funnel out unnatural probabilities
 def shrink_probabilities(predictions):
     for key in ["home_win", "draw", "away_win"]:
         predictions[key] *= PROBABILITY_SHRINKAGE
@@ -26,6 +27,7 @@ def shrink_probabilities(predictions):
 
     return predictions
 
+# run backtesting
 def run_backtest(matches):
 
     matches = matches.order_by("match_date")
@@ -92,6 +94,7 @@ def run_backtest(matches):
         best_market = None
         best_edge = 0
 
+        # Only allow one bet per game, bet the one with the best market difference
         for market, data in markets.items():
             
           
@@ -122,6 +125,7 @@ def run_backtest(matches):
             else:
                 profit -= 1
 
+        # update team strengths for next match (as strengths should only be calculated from previous matches from the current one)
         update_team_stats(match, match.match_date, goals_scored, goals_conceded, matches_played)
 
         total_home_goals += match.home_score
@@ -138,6 +142,7 @@ def run_backtest(matches):
         "roi": round(roi, 3)
     }
 
+# updates team stats after each match has been processed
 def update_team_stats(match, prediction_date, goals_scored, goals_conceded, matches_played):
 
     weight = match_weight(match.match_date, prediction_date)
@@ -154,6 +159,7 @@ def update_team_stats(match, prediction_date, goals_scored, goals_conceded, matc
     matches_played[home] += weight
     matches_played[away] += weight
 
+# track if the bet wins and if so, increment the win counter
 def bet_wins(market, match):
 
     if market == "home_win":

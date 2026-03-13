@@ -2,7 +2,7 @@ from django.core.management.base import BaseCommand
 
 from analytics.services.team_strength_service import calculate_team_strengths
 
-
+# callable function to return successful team strength calculation
 class Command(BaseCommand):
 
     help = "Calculate team attack and defence strengths"

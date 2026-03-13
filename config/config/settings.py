@@ -32,7 +32,7 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv("DEBUG") == "True"
 
-
+# Prevent third party API calls
 ALLOWED_HOSTS = [
     "127.0.0.1",
     "localhost"
@@ -142,7 +142,7 @@ STATIC_URL = "/static/"
 STATICFILES_DIRS = [BASE_DIR / "static"]
 
 
-
+# Add security features such as JWT authentication, rate limiting and pagination
 REST_FRAMEWORK = {
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
     "DEFAULT_AUTHENTICATION_CLASSES": (
@@ -170,20 +170,24 @@ SPECTACULAR_SETTINGS = {
     "VERSION": "1.0.0",
 }
 
+# Cors protection
 CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:8000",
     "http://localhost:8000",
 ]
 
+# more security features
 SECURE_BROWSER_XSS_FILTER = True
 
 SECURE_CONTENT_TYPE_NOSNIFF = True
 
 X_FRAME_OPTIONS = "DENY"
 
+# payload size limiter
 DATA_UPLOAD_MAX_MEMORY_SIZE = 2621440
 
 DEFAULT_EXCEPTION_HANDLER = "rest_framework.views.exception_handler"
 
+# Disable throttling for test classes
 if "test" in sys.argv:
     REST_FRAMEWORK["DEFAULT_THROTTLE_CLASSES"] = []

@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from .models import Prediction
 
-
+# serializers for input validation
 class PredictionSerializer(serializers.ModelSerializer):
 
     class Meta:
@@ -25,6 +25,7 @@ class ValueBetSerializer(serializers.Serializer):
     home_team = serializers.IntegerField()
     away_team = serializers.IntegerField()
 
+    # ensure realistic odds are entered
     home_odds = serializers.FloatField(min_value=1.01, max_value=100)
     draw_odds = serializers.FloatField(min_value=1.01, max_value=100)
     away_odds = serializers.FloatField(min_value=1.01, max_value=100)

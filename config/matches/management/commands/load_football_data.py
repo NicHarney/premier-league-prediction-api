@@ -28,6 +28,7 @@ SEASONS = [
     "1516",
 ]
 
+# Load datasets from public website and add information to the database
 class Command(BaseCommand):
 
     help = "Load Premier League datasets"
@@ -76,6 +77,7 @@ class Command(BaseCommand):
                     
                 )
 
+                # If betting information exists, add it to the database
                 if row.get("B365H") and row.get("B365D") and row.get("B365A"):
     
                     BettingOdds.objects.update_or_create(

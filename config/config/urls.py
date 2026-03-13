@@ -29,6 +29,7 @@ from analytics.views import BettingOddsViewSet
 from predictions.views import frontend_view
 from django.shortcuts import render
 
+# Initialise frontend urls
 def home(request):
     return render(request, "index.html")
 
@@ -44,6 +45,7 @@ def backtest_page(request):
 def explorer_page(request):
     return render(request, "explorer.html")
 
+# Initialise routers
 router = DefaultRouter()
 
 router.register("teams", TeamViewSet)

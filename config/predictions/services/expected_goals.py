@@ -1,5 +1,6 @@
 HOME_ADVANTAGE = 1.1 
 
+# calculate expected goals for each team in a game with home advantage applied
 def calculate_expected_goals(home_team, away_team, league_home_avg, league_away_avg):
 
     home_xg = (

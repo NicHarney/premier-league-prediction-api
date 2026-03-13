@@ -4,7 +4,7 @@ import math
 
 DECAY_RATE = 0.002
 
-
+## add weighting to team strength calculation
 def match_weight(match_date, prediction_date):
 
     today = timezone.now()

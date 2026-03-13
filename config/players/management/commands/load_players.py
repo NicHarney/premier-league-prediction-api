@@ -5,6 +5,8 @@ from players.models import Player
 from teams.models import Team
 from pathlib import Path
 
+
+# Load sample players from csv into the database
 BASE_DIR = Path(__file__).resolve().parents[3]
 DATA_DIR = BASE_DIR / "players" / "data" 
 class Command(BaseCommand):

@@ -23,14 +23,14 @@ class MatchEndpointTests(TestCase):
             match_date="2023-8-15"
         )
 
-
+    # Check match list
     def test_match_list(self):
 
         response = self.client.get("/api/matches/")
 
         self.assertEqual(response.status_code, 200)
 
-
+    # Check filtering is enabled
     def test_match_filter_by_team(self):
 
         response = self.client.get(

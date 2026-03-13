@@ -3,7 +3,7 @@ from django.core.management.base import BaseCommand
 from players.models import Player
 from matches.models import Match, PlayerMatchStats
 
-
+# Generate sample player stats for players that exist in the database
 class Command(BaseCommand):
 
     help = "Generate example player match stats"

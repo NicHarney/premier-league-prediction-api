@@ -14,9 +14,14 @@ from django.shortcuts import render
 from .throttles import PredictionThrottle, BacktestThrottle
 from rest_framework.decorators import throttle_classes
 from .serializers import MatchPredictionSerializer, ValueBetSerializer
+from drf_spectacular.utils import extend_schema
 
+@extend_schema(
+    request=MatchPredictionSerializer,
+    responses=200
+)
 
-
+# view for showing match prediction
 @api_view(["POST"])
 @throttle_classes([PredictionThrottle])
 def predict_match_view(request):
@@ -32,11 +37,6 @@ def predict_match_view(request):
         home_team_id = serializer.validated_data["home_team"]
         away_team_id = serializer.validated_data["away_team"]
 
-     
-
-        
-        #home_team_id = int(home_team_id)
-        #away_team_id = int(away_team_id)
    
 
         home_team = get_object_or_404(Team, id=home_team_id)
@@ -107,6 +107,11 @@ def predict_match_view(request):
         )
 
 
+@extend_schema(
+    request=ValueBetSerializer,
+    responses=200
+)
+# view for showing value bets for a game
 @api_view(["POST"])
 @throttle_classes([PredictionThrottle])
 def value_bet_view(request):
@@ -193,14 +198,18 @@ def value_bet_view(request):
             status=status.HTTP_500_INTERNAL_SERVER_ERROR,
         )
 
-
+# view for showing backtesting results
 @api_view(["GET"])
 @throttle_classes([BacktestThrottle])
 def backtest_view(request):
 
     try:
 
-        matches = Match.objects.select_related("odds").all()
+        matches = Match.objects.select_related("odds").filter(
+            home_score__isnull=False,
+            away_score__isnull=False,
+            odds__isnull=False
+        )
 
         if not matches.exists():
             return Response(

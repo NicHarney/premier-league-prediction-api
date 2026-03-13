@@ -1,6 +1,7 @@
 from rest_framework.throttling import AnonRateThrottle, UserRateThrottle
 import sys
 
+# add throttles for rate limiting
 class PredictionThrottle(UserRateThrottle):
     scope = 'prediction'
 

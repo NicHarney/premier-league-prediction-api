@@ -1,3 +1,4 @@
+# calculate expected value
 def expected_value(prob, odds):
 
     if odds is None:
@@ -5,7 +6,7 @@ def expected_value(prob, odds):
 
     return prob * odds - 1
 
-
+# calculate ev and market edge
 def evaluate_markets(predictions, odds):
 
     markets = {}

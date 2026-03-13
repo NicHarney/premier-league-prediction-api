@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from .models import Match, PlayerMatchStats
 
-
+# serializers to validate user input
 class MatchSerializer(serializers.ModelSerializer):
 
     home_team_name = serializers.CharField(
