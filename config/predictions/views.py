@@ -214,10 +214,16 @@ def backtest_view(request):
         if not matches.exists():
             return Response(
                 {
-                    "status": "error",
-                    "message": "No matches available for backtesting"
+                    "status": "success",
+                    "data": {
+                        "matches_tested": 0,
+                        "bets_placed": 0,
+                        "wins": 0,
+                        "profit": 0,
+                        "roi": 0
+                    }
                 },
-                status=status.HTTP_404_NOT_FOUND,
+                status=200,
             )
         
         results = run_backtest(matches)
