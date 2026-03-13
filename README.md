@@ -231,7 +231,7 @@ Interactive API documentation is available through Swagger:
 **api/docs**
 
 Full API documentation is provided in this PDF:
-[API Documentation](/config/docs/API_DOCUMENTATION.pdf)
+[API Documentation](docs/API_DOCUMENTATION.pdf)
 This documentation includes endpoint descriptions, request schemas, response formats and example payloads generated from the OpenAPI schema.
 
 This allows exploration of endpoints and request formats directly from the browser. All endpoints are seen in this doc, all of them allow users to enter parameters in JSON format. A couple of important things to note for certain searches:
