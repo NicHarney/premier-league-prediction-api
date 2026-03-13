@@ -17,7 +17,7 @@ class MatchViewSet(viewsets.ModelViewSet):
     queryset = Match.objects.select_related(
         "home_team",
         "away_team"
-    ).all()
+    ).order_by("-match_date")
 
     serializer_class = MatchSerializer
 

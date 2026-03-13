@@ -16,7 +16,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 # Create your views here.
 
 class TeamViewSet(viewsets.ModelViewSet):
-    queryset = Team.objects.all().order_by("id")
+    queryset = Team.objects.all().order_by("name")
     serializer_class = TeamSerializer
     filter_backends = [SearchFilter, DjangoFilterBackend]
     search_fields = ['name']

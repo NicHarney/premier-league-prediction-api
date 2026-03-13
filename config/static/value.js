@@ -39,30 +39,51 @@ function handleApiError(status, data) {
 }
 async function loadTeams() {
 
-    const response = await fetch("/api/teams/");
-    const data = await response.json();
+    try {
 
-    const homeSelect = document.getElementById("homeTeam");
-    const awaySelect = document.getElementById("awayTeam");
+        let url = "/api/teams/";
+        let teams = [];
 
-    homeSelect.innerHTML = "";
-    awaySelect.innerHTML = "";
+        while (url) {
 
-    data.results.forEach(team => {
+            const response = await fetch(url);
+            const data = await response.json();
 
-        const option1 = document.createElement("option");
-        option1.value = team.id;
-        option1.textContent = team.name;
+            // Handle paginated responses
+            if (data.results) {
+                teams = teams.concat(data.results);
+                url = data.next;
+            } else {
+                // Non-paginated fallback
+                teams = data;
+                url = null;
+            }
 
-        const option2 = document.createElement("option");
-        option2.value = team.id;
-        option2.textContent = team.name;
+        }
 
-        homeSelect.appendChild(option1);
-        awaySelect.appendChild(option2);
+        const homeSelect = document.getElementById("homeTeam");
+        const awaySelect = document.getElementById("awayTeam");
 
-    });
+        homeSelect.innerHTML = "";
+        awaySelect.innerHTML = "";
 
+        teams
+            .sort((a, b) => a.name.localeCompare(b.name))
+            .forEach(team => {
+
+                const homeOption = new Option(team.name, team.id);
+                const awayOption = new Option(team.name, team.id);
+
+                homeSelect.add(homeOption);
+                awaySelect.add(awayOption);
+
+            });
+
+    } catch (error) {
+
+        console.error("Error loading teams:", error);
+
+    }
 }
 
 async function calculateValue() {

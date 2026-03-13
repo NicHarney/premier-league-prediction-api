@@ -64,6 +64,6 @@ urlpatterns = [
     path("api/docs/", SpectacularSwaggerView.as_view(url_name="schema")),
     path("api/predictions/", include("predictions.urls")),
     path("api/", include(router.urls)),
-    #
+    
     
 ]

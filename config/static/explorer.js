@@ -1,26 +1,51 @@
 async function loadTeamsDropdown() {
 
-    const response = await fetch("/api/teams/?page_size=100");
-    const data = await response.json();
+    try {
 
-    const home = document.getElementById("homeTeam");
-    const away = document.getElementById("awayTeam");
+        let url = "/api/teams/";
+        let teams = [];
 
-    home.innerHTML = "<option value=''>Any</option>";
-    away.innerHTML = "<option value=''>Any</option>";
+        while (url) {
 
-    data.results.forEach(team => {
+            const response = await fetch(url);
+            const data = await response.json();
 
-        const option1 = document.createElement("option");
-        option1.value = team.id;
-        option1.textContent = team.name;
+            if (data.results) {
+                teams = teams.concat(data.results);
+                url = data.next;
+            } else {
+                teams = data;
+                url = null;
+            }
 
-        const option2 = option1.cloneNode(true);
+        }
 
-        home.appendChild(option1);
-        away.appendChild(option2);
+        const home = document.getElementById("homeTeam");
+        const away = document.getElementById("awayTeam");
 
-    });
+        home.innerHTML = "<option value=''>Any</option>";
+        away.innerHTML = "<option value=''>Any</option>";
+
+        teams
+            .sort((a,b) => a.name.localeCompare(b.name))
+            .forEach(team => {
+
+                const option1 = document.createElement("option");
+                option1.value = team.id;
+                option1.textContent = team.name;
+
+                const option2 = option1.cloneNode(true);
+
+                home.appendChild(option1);
+                away.appendChild(option2);
+
+            });
+
+    } catch (error) {
+
+        console.error("Error loading teams:", error);
+
+    }
 
 }
 
@@ -33,69 +58,91 @@ async function searchTeams() {
         .toLowerCase()
         .trim();
 
-    const response = await fetch("/api/teams/?page_size=100");
-    const data = await response.json();
-
     const container = document.getElementById("results");
 
-    const teams = data.results.filter(team => {
+    try {
 
-        const name = team.name.toLowerCase();
+        let url = "/api/teams/";
+        let allTeams = [];
 
-        return (
-            name.includes(query) ||
-            query.includes(name) ||
-            name.replace("man", "manchester").includes(query) ||
-            query.replace("manchester", "man").includes(name)
-        );
+        while (url) {
 
-    });
+            const response = await fetch(url);
+            const data = await response.json();
 
-    if (teams.length === 0) {
+            if (data.results) {
+                allTeams = allTeams.concat(data.results);
+                url = data.next;
+            } else {
+                allTeams = data;
+                url = null;
+            }
+
+        }
+
+        const teams = allTeams.filter(team => {
+
+            const name = team.name.toLowerCase();
+
+            return (
+                name.includes(query) ||
+                query.includes(name) ||
+                name.replace("man", "manchester").includes(query) ||
+                query.replace("manchester", "man").includes(name)
+            );
+
+        });
+
+        if (teams.length === 0) {
+
+            container.innerHTML = `
+            <div class="alert alert-warning">
+            No teams found.
+            </div>
+            `;
+
+            return;
+        }
 
         container.innerHTML = `
-        <div class="alert alert-warning">
-        No teams found.
-        </div>
+
+        <h3 class="mb-3">Teams</h3>
+
+        <table class="table table-striped">
+
+        <thead>
+        <tr>
+            <th>Name</th>
+            <th>Home Attack</th>
+            <th>Away Attack</th>
+            <th>Home Defence</th>
+            <th>Away Defence</th>
+        </tr>
+        </thead>
+
+        <tbody>
+
+        ${teams.map(team => `
+            <tr>
+                <td>${team.name}</td>
+                <td>${team.home_attack_strength ?? "N/A"}</td>
+                <td>${team.away_attack_strength ?? "N/A"}</td>
+                <td>${team.home_defence_strength ?? "N/A"}</td>
+                <td>${team.away_defence_strength ?? "N/A"}</td>
+            </tr>
+        `).join("")}
+
+        </tbody>
+
+        </table>
         `;
 
-        return;
+    } catch (error) {
+
+        console.error("Error searching teams:", error);
 
     }
 
-    container.innerHTML = `
-
-    <h3 class="mb-3">Teams</h3>
-
-    <table class="table table-striped">
-
-    <thead>
-    <tr>
-        <th>Name</th>
-        <th>Home Attack</th>
-        <th>Away Attack</th>
-        <th>Home Defence</th>
-        <th>Away Defence</th>
-    </tr>
-    </thead>
-
-    <tbody>
-
-    ${teams.map(team => `
-        <tr>
-            <td>${team.name}</td>
-            <td>${team.home_attack_strength ?? "N/A"}</td>
-            <td>${team.away_attack_strength ?? "N/A"}</td>
-            <td>${team.home_defence_strength ?? "N/A"}</td>
-            <td>${team.away_defence_strength ?? "N/A"}</td>
-        </tr>
-    `).join("")}
-
-    </tbody>
-
-    </table>
-
-    `;
 }
 
 
