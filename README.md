@@ -16,8 +16,8 @@ This project includes advanced backend engineering concepts including statistica
 Provides full CRUD support for the following entities:
 - Teams
 - Matches
-- Players (no data populated)
-- Player Match Statistics (no data populated)
+- Players 
+- Player Match Statistics 
 - Betting odds
 
 Endpoints support filtering, searching and ordering to allow flexible data access.
@@ -63,6 +63,9 @@ The interface supports:
 - exploring teams and matches
 - filtering historical seasons
 
+### Backend Player data ###
+As the API mainly focuses on team and match prediction, player integration holds as a background feature that would be improved on in the future. Currently, as it does not affect predictions, it is only seen in the backend and the API docs. It can be accessed through the route /api/players for player information and api/player-match-stats. Both of these have CRUD integration and users can access individual players through {id} search within these routes.
+
 ## System Architecture ## 
 Modular Django architecture:
 - project
@@ -86,6 +89,7 @@ Modular Django architecture:
     - management
       - commands
         - load_football_data.py
+        - load_player_stats.py
     - migrations
     - tests
       - test_matches.py
@@ -96,6 +100,12 @@ Modular Django architecture:
     - serializers.py
     - views.py
   - players
+    - data
+      - player_match_stats.csv
+      - players.csv
+    - management
+      - commands
+        - load_players.py
     - migrations
     - admin.py
     - apps.py
@@ -160,7 +170,7 @@ Key entities include:
 Stores team information and derived stats such as attack and defence strengths.
 
 ### Player ###
-Would represent individual players and their team -> out of scope.
+Stores player information such as the team they played for and date of birth.
 
 ### Match ###
 Stores match results including:
@@ -171,7 +181,7 @@ Stores match results including:
 - match date
 
 ### Player Match Stats
-Would store per match player performance such as goals, assists, shots and fouls.
+Stores player stats per game.
 
 ### Betting odds ###
 Stores bookmaker odds for match outcomes used in value analysis.
@@ -220,7 +230,12 @@ Example test categories:
 Interactive API documentation is available through Swagger:
 **api/docs**
 
-This allows exploration of endpoints and request formats directly from the browser.
+This allows exploration of endpoints and request formats directly from the browser. All endpoints are seen in this doc, all of them allow users to enter parameters in JSON format. A couple of important things to note for certain searches:
+- For POST /api/betting-odds the user should go to POST /api/matches and create a new match and make note of the ID before adding odds, and when entering odds use this new match ID as the system has in built protection of changing odds in matches already in the system.
+- For PUT /api/betting-odds{id}, team IDs and match ID must line up to protect against invalid inputs, use GET /api/betting-odds to check for valid inputs
+- For GET /api/matches, ordering can be match_date and -match_date
+- For GET /api/matches/{id}, verify valid match IDs first through standard GET /api/matches, as the system protects against invalid match IDs and so a valid ID must be inputted to retrieve information
+- For GET /api/matches/{id}/player_stats, as the player data is sampled and not there for every match, use GET api/player-match-stats/ to check match IDs that have player stats data first
 
 ## Example Endpoints ##
 ### Predict Match Outcome ###
@@ -251,7 +266,7 @@ Returns expected value for each market
 
 ### Backtesting ###
 **GET /api/predictions/backtest**
-Returns model performance metrics including ROI.
+Returns model performance metrics including ROI. Please note that as this loads data from over 4000 rows, it will take a couple of minutes to return its metrics.
 
 ### Other endpoints ###
 -**/api/teams**
@@ -275,8 +290,11 @@ Match and odds data are sourced from publicly available datasets. These datasets
 ### Apply migrations ###
 **python manage.py migrate**
 
-### Load dataset ###
+### Load datasets ###
 **python manage.py load_football_data**
+**python manage.py load_players**
+**python manage.py load_player_stats**
+
 
 ## Start Server ##
 **python manage.py runserver**
