@@ -52,7 +52,12 @@ async function loadTeams() {
             // Handle paginated responses
             if (data.results) {
                 teams = teams.concat(data.results);
-                url = data.next;
+                 if(data.next){
+                    const nextUrl = new URL(data.next);
+                    url = nextUrl.pathname + nextUrl.search;
+                } else{
+                    url = null;
+                }
             } else {
                 // Non-paginated fallback
                 teams = data;
@@ -95,43 +100,39 @@ async function calculateValue() {
         alert("Home and Away teams must be different");
         return;
     }
+
     const homeOdds = document.getElementById("homeOdds").value;
     const drawOdds = document.getElementById("drawOdds").value;
     const awayOdds = document.getElementById("awayOdds").value;
 
-    const response = await fetch("/api/predictions/value/", {
+    try {
 
-        method: "POST",
+        const response = await fetch("/api/predictions/value/", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                home_team: homeTeam,
+                away_team: awayTeam,
+                home_odds: homeOdds,
+                draw_odds: drawOdds,
+                away_odds: awayOdds
+            })
+        });
 
-        headers: {
-            "Content-Type": "application/json"
-        },
+        const data = await response.json();
 
-        body: JSON.stringify({
+        if (!response.ok) {
+            handleApiError(response.status, data);
+            return;
+        }
 
-            home_team: homeTeam,
-            away_team: awayTeam,
-            home_odds: homeOdds,
-            draw_odds: drawOdds,
-            away_odds: awayOdds
+        displayResults(data.data);
 
-        })
-
-    });
-
-    const data = await response.json();
-
-
-    if(!response.ok) {
-
-       handleApiError(response.status,data);
-       return;
+    } catch (error) {
+        console.error("Value request failed:", error);
     }
-    
-    
-
-    displayResults(data.data);
-
 }
 
 function displayResults(data) {

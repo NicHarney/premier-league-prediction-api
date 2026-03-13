@@ -9,6 +9,7 @@ from teams.models import Team
 from matches.models import Match
 from datetime import datetime
 from analytics.models import BettingOdds
+from django.utils import timezone
 
 BASE_DIR = Path(__file__).resolve().parents[3]
 DATA_DIR = BASE_DIR / "data" / "seasons"
@@ -63,8 +64,10 @@ class Command(BaseCommand):
                 date = row["Date"]
                 try:
                     match_date = datetime.strptime(row["Date"], "%d/%m/%y")
+                    match_date = timezone.make_aware(match_date)
                 except ValueError:
                     match_date = datetime.strptime(row["Date"], "%d/%m/%Y")
+                    match_date = timezone.make_aware(match_date)
                 match, created = Match.objects.get_or_create(
                     home_team=home_team,
                     away_team=away_team,
@@ -82,8 +85,8 @@ class Command(BaseCommand):
     
                     BettingOdds.objects.update_or_create(
                         match=match,
-                        bookmaker="Bet365",
                         defaults={
+                            "bookmaker":"Bet365",
                             "home_win_odds": float(row["B365H"]),
                             "draw_odds": float(row["B365D"]),
                             "away_win_odds": float(row["B365A"]),

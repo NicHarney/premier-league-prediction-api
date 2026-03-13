@@ -12,7 +12,12 @@ async function loadTeamsDropdown() {
 
             if (data.results) {
                 teams = teams.concat(data.results);
-                url = data.next;
+                 if(data.next){
+                    const nextUrl = new URL(data.next);
+                    url = nextUrl.pathname + nextUrl.search;
+                } else{
+                    url = null;
+                }
             } else {
                 teams = data;
                 url = null;
@@ -72,7 +77,12 @@ async function searchTeams() {
 
             if (data.results) {
                 allTeams = allTeams.concat(data.results);
-                url = data.next;
+                 if(data.next){
+                    const nextUrl = new URL(data.next);
+                    url = nextUrl.pathname + nextUrl.search;
+                } else{
+                    url = null;
+                }
             } else {
                 allTeams = data;
                 url = null;

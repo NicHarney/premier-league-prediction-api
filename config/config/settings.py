@@ -35,7 +35,8 @@ DEBUG = os.getenv("DEBUG") == "True"
 # Prevent third party API calls
 ALLOWED_HOSTS = [
     "127.0.0.1",
-    "localhost"
+    "localhost",
+    ".github.dev"
 ]
 
 
@@ -174,6 +175,7 @@ SPECTACULAR_SETTINGS = {
 CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:8000",
     "http://localhost:8000",
+    "https://*.github.dev",
 ]
 
 # more security features

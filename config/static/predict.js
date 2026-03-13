@@ -55,7 +55,12 @@ async function loadTeams() {
             // Handle paginated responses
             if (data.results) {
                 teams = teams.concat(data.results);
-                url = data.next;
+                if(data.next){
+                    const nextUrl = new URL(data.next);
+                    url = nextUrl.pathname + nextUrl.search;
+                } else{
+                    url = null;
+                }
             } else {
                 // Non-paginated fallback
                 teams = data;
