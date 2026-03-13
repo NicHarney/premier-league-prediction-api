@@ -296,13 +296,13 @@ Match and odds data are sourced from publicly available datasets. These datasets
 **cd config** - allows access to manage.py, ensure its the first config folder and not the second which contains settings.py and urls.py.
 
 ### Apply migrations ###
-**python manage.py makemigrations**
-**python manage.py migrate**
+- **python manage.py makemigrations**
+- **python manage.py migrate**
 
 ### Load datasets ###
-**python manage.py load_football_data**
-**python manage.py load_players**
-**python manage.py load_player_stats**
+- **python manage.py load_football_data**
+- **python manage.py load_players**
+- **python manage.py load_player_stats**
 
 
 ## Start Server ##
